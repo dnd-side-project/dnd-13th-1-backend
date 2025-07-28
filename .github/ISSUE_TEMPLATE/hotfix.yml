@@ -1,0 +1,22 @@
+name: ❗ Hotfix
+description: 버그 해결 및 에러 수정
+title: "[Hotfix]: "
+labels:
+  - ❗ Hotfix
+projects: ["dnd-side-project/119"]
+body:
+  - type: textarea
+    attributes:
+      label: 📄 설명
+      placeholder: 자세히 적을수록 좋습니다!
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: ✔️ 작업할 내용
+      placeholder: |
+        - [ ] 작업 1: 엔드포인트 연동
+        - [ ] 작업 2: 리스폰스 DTO 작성
+        최대한 자세히 적어주세요!
+    validations:
+      required: false
