@@ -9,7 +9,7 @@ RUN gradle build -x test --no-daemon || true
 
 # 전체 소스 복사 후 실제 빌드
 COPY . .
-RUN gradle clean build -x test --no-daemon
+RUN gradle clean build -x test -PdockerBuild --no-daemon
 
 # ✅ 2단계: 런타임용 (경량 JDK 21)
 FROM eclipse-temurin:21-jdk-jammy
