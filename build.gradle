@@ -66,3 +66,7 @@ dependencyManagement {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+springBoot {
+	mainClass = 'team1.HouseworkApplication'
+}
