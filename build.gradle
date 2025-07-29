@@ -14,7 +14,7 @@ java {
 }
 
 springBoot {
-	mainClass = 'team1.HouseworkApplication'
+	mainClass = 'team1.housework.HouseworkApplication'
 }
 
 configurations {
