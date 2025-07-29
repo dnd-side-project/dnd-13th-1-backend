@@ -49,8 +49,9 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
-	developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
-	developmentOnly 'org.springframework.ai:spring-ai-spring-boot-docker-compose'
+	if (!project.hasProperty('dockerBuild')) {
+		developmentOnly 'org.springframework.ai:spring-ai-spring-boot-docker-compose:1.0.0'
+	}
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
