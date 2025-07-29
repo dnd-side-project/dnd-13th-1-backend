@@ -15,8 +15,8 @@ RUN gradle clean build -x test -PdockerBuild --no-daemon
 FROM eclipse-temurin:21-jdk-jammy
 WORKDIR /app
 
-# JAR 파일 복사 (libs 디렉토리에 *.jar가 하나라고 가정)
-COPY --from=builder /app/build/libs/*.jar app.jar
+# JAR 파일 복사
+COPY --from=builder /app/build/libs/app.jar app.jar
 
 # HTTP 포트 오픈
 EXPOSE 8080
