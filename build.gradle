@@ -13,6 +13,10 @@ java {
 	}
 }
 
+springBoot {
+	mainClass = 'team1.HouseworkApplication'
+}
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
@@ -33,7 +37,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-	implementation 'org.springframework.ai:spring-ai-starter-model-openai:1.0.0'
 
 	// Querydsl
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
@@ -49,9 +52,7 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
-	if (!project.hasProperty('dockerBuild')) {
-		developmentOnly 'org.springframework.ai:spring-ai-spring-boot-docker-compose:1.0.0'
-	}
+	runtimeOnly 'com.h2database:h2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -75,8 +76,4 @@ tasks.named('jar') {
 // bootJar 이름을 고정
 tasks.named('bootJar') {
 	archiveFileName = 'app.jar'
-}
-
-springBoot {
-	mainClass = 'team1.HouseworkApplication'
 }
