@@ -3,7 +3,7 @@ FROM gradle:8.5-jdk21 AS builder
 WORKDIR /app
 
 # Gradle 캐시를 위해 필요한 파일 먼저 복사
-COPY build.gradle settings.gradle gradle.properties ./
+COPY build.gradle settings.gradle ./
 COPY gradle ./gradle
 RUN gradle build -x test --no-daemon || true
 
