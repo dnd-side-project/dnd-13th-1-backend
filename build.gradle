@@ -67,6 +67,16 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+// 기존 jar 생성을 비활성화 (bootJar만 생성)
+tasks.named('jar') {
+	enabled = false
+}
+
+// bootJar 이름을 고정
+tasks.named('bootJar') {
+	archiveFileName = 'app.jar'
+}
+
 springBoot {
 	mainClass = 'team1.HouseworkApplication'
 }
