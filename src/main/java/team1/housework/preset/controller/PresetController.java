@@ -1,0 +1,24 @@
+package team1.housework.preset.controller;
+
+import java.util.List;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
+import team1.housework.preset.service.PresetService;
+import team1.housework.preset.service.dto.PresetHouseWorkResponse;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/preset")
+public class PresetController {
+
+	private final PresetService presetService;
+
+	@GetMapping("/house-work")
+	public List<PresetHouseWorkResponse> getPresetHouseWorks() {
+		return presetService.getPresetHouseWorks();
+	}
+}
