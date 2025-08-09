@@ -1,5 +1,8 @@
 package team1.housework.group.service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -10,20 +13,27 @@ import lombok.RequiredArgsConstructor;
 import team1.housework.character.service.CharacterService;
 import team1.housework.group.entity.Group;
 import team1.housework.group.entity.GroupMember;
+import team1.housework.group.entity.HouseWork;
 import team1.housework.group.entity.Place;
 import team1.housework.group.entity.Tag;
 import team1.housework.group.repository.GroupMemberRepository;
 import team1.housework.group.repository.GroupRepository;
+import team1.housework.group.repository.HouseWorkRepository;
 import team1.housework.group.repository.PlaceRepository;
 import team1.housework.group.repository.TagRepository;
 import team1.housework.group.service.dto.EnterRequest;
 import team1.housework.group.service.dto.EnterResponse;
 import team1.housework.group.service.dto.GroupRequest;
 import team1.housework.group.service.dto.GroupResponse;
+import team1.housework.group.service.dto.HouseWorkResponse;
+import team1.housework.group.service.dto.HouseWorkSaveRequest;
 import team1.housework.group.service.dto.MemberResponse;
+import team1.housework.group.service.dto.MyGroupResponse;
 import team1.housework.group.service.dto.PlaceResponse;
 import team1.housework.group.service.dto.TagResponse;
 import team1.housework.group.service.generator.InviteCodeGenerator;
+import team1.housework.group.service.policy.DayOfWeekPolicy;
+import team1.housework.group.service.policy.RoutinePolicy;
 import team1.housework.member.entity.Member;
 import team1.housework.member.service.MemberService;
 import team1.housework.preset.service.PresetService;
@@ -37,6 +47,7 @@ public class GroupService {
 	private final PlaceRepository placeRepository;
 	private final TagRepository tagRepository;
 	private final GroupMemberRepository groupMemberRepository;
+	private final HouseWorkRepository houseWorkRepository;
 
 	private final InviteCodeGenerator inviteCodeGenerator;
 
@@ -123,4 +134,42 @@ public class GroupService {
 		}
 	}
 
+	public MyGroupResponse getMyGroup(Member member) {
+		GroupMember groupMember = groupMemberRepository.findFirstByMemberId(member.getId())
+			.orElseThrow(() -> new NoSuchElementException("Group Member does not exist"));
+		return new MyGroupResponse(groupMember.getGroup().getId());
+	}
+
+	@Transactional
+	public HouseWorkResponse saveHouseWork(Long groupId, HouseWorkSaveRequest request) {
+		Group group = groupRepository.findById(groupId)
+			.orElseThrow(() -> new NoSuchElementException("Group does not exist"));
+
+		Place place = placeRepository.findById(request.placeId())
+			.orElseThrow(() -> new NoSuchElementException("Place does not exist"));
+
+		RoutinePolicy policy = RoutinePolicy.valueOf(request.routinePolicy());
+		List<DayOfWeek> targetDays = request.dayOfWeek().stream()
+			.map(d -> DayOfWeekPolicy.valueOf(d).toJavaDayOfWeek())
+			.toList();
+
+		LocalDate current = request.startDate();
+		List<HouseWork> houseWorks = new ArrayList<>();
+
+		while (!current.isAfter(request.dueDate())) {
+			if (policy.shouldAdd(request.startDate(), current, targetDays)) {
+				houseWorks.add(new HouseWork(
+					request.houseWorkName(),
+					place,
+					group,
+					current,
+					request.isNotified()
+				));
+			}
+			current = current.plusDays(1);
+		}
+
+		houseWorkRepository.saveAll(houseWorks);
+		return new HouseWorkResponse(houseWorks.getFirst().getId());
+	}
 }

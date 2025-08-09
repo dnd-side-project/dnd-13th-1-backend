@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import team1.housework.group.service.dto.MyGroupResponse;
 import team1.housework.member.entity.Member;
 import team1.housework.member.repository.MemberRepository;
 
@@ -21,4 +22,7 @@ public class MemberService {
 			.orElseThrow(() -> new NoSuchElementException("Member not found"));
 	}
 
+	public MyGroupResponse getMyGroup(Member member) {
+		return null;
+	}
 }

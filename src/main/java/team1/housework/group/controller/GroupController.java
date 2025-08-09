@@ -16,10 +16,13 @@ import team1.housework.group.service.dto.EnterRequest;
 import team1.housework.group.service.dto.EnterResponse;
 import team1.housework.group.service.dto.GroupRequest;
 import team1.housework.group.service.dto.GroupResponse;
+import team1.housework.group.service.dto.HouseWorkResponse;
+import team1.housework.group.service.dto.HouseWorkSaveRequest;
 import team1.housework.group.service.dto.MemberResponse;
 import team1.housework.group.service.dto.PlaceResponse;
 import team1.housework.group.service.dto.TagResponse;
 import team1.housework.member.entity.Member;
+import team1.housework.group.service.dto.MyGroupResponse;
 
 @RestController
 @RequiredArgsConstructor
@@ -52,5 +55,15 @@ public class GroupController {
 	@GetMapping("/{groupId}/members")
 	public List<MemberResponse> getMembers(@PathVariable Long groupId) {
 		return groupService.getMembers(groupId);
+	}
+
+	@GetMapping("/my-group")
+	public MyGroupResponse getMyGroup(@Auth Member member) {
+		return groupService.getMyGroup(member);
+	}
+
+	@PostMapping("/{groupId}/house-work")
+	public HouseWorkResponse saveHouseWork(@PathVariable Long groupId, @RequestBody HouseWorkSaveRequest request) {
+		return groupService.saveHouseWork(groupId, request);
 	}
 }
