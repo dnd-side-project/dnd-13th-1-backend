@@ -1,7 +1,5 @@
 package team1.housework.group.entity;
 
-import java.time.LocalDate;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,32 +13,21 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class HouseWork {
+public class HouseWorkTag {
 
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private String name;
+	@ManyToOne
+	@JoinColumn(name = "house_work_id")
+	private HouseWork houseWork;
 
 	@ManyToOne
-	@JoinColumn(name = "place_id")
-	private Place place;
+	@JoinColumn(name = "tag_id")
+	private Tag tag;
 
-	@ManyToOne
-	@JoinColumn(name = "group_id")
-	private Group group;
-
-
-
-	private LocalDate taskDate;
-
-	private boolean isNotified;
-
-	public HouseWork(String name, Place place, Group group, LocalDate taskDate, boolean isNotified) {
-		this.name = name;
-		this.place = place;
-		this.group = group;
-		this.taskDate = taskDate;
-		this.isNotified = isNotified;
+	public HouseWorkTag(HouseWork houseWork, Tag tag) {
+		this.houseWork = houseWork;
+		this.tag = tag;
 	}
 }

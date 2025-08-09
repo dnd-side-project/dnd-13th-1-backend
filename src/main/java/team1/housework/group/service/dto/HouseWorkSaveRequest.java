@@ -6,6 +6,7 @@ import java.util.List;
 public record HouseWorkSaveRequest(
 	String houseWorkName,
 	Long placeId,
+	List<Long> tags,
 	LocalDate startDate,
 	LocalDate dueDate,
 	String routinePolicy,

@@ -2,7 +2,6 @@ package team1.housework.group.service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -14,18 +13,19 @@ import team1.housework.character.service.CharacterService;
 import team1.housework.group.entity.Group;
 import team1.housework.group.entity.GroupMember;
 import team1.housework.group.entity.HouseWork;
+import team1.housework.group.entity.HouseWorkTag;
 import team1.housework.group.entity.Place;
 import team1.housework.group.entity.Tag;
 import team1.housework.group.repository.GroupMemberRepository;
 import team1.housework.group.repository.GroupRepository;
 import team1.housework.group.repository.HouseWorkRepository;
+import team1.housework.group.repository.HouseWorkTagRepository;
 import team1.housework.group.repository.PlaceRepository;
 import team1.housework.group.repository.TagRepository;
 import team1.housework.group.service.dto.EnterRequest;
 import team1.housework.group.service.dto.EnterResponse;
 import team1.housework.group.service.dto.GroupRequest;
 import team1.housework.group.service.dto.GroupResponse;
-import team1.housework.group.service.dto.HouseWorkResponse;
 import team1.housework.group.service.dto.HouseWorkSaveRequest;
 import team1.housework.group.service.dto.MemberResponse;
 import team1.housework.group.service.dto.MyGroupResponse;
@@ -48,6 +48,7 @@ public class GroupService {
 	private final TagRepository tagRepository;
 	private final GroupMemberRepository groupMemberRepository;
 	private final HouseWorkRepository houseWorkRepository;
+	private final HouseWorkTagRepository houseWorkTagRepository;
 
 	private final InviteCodeGenerator inviteCodeGenerator;
 
@@ -141,7 +142,7 @@ public class GroupService {
 	}
 
 	@Transactional
-	public HouseWorkResponse saveHouseWork(Long groupId, HouseWorkSaveRequest request) {
+	public void saveHouseWork(Long groupId, HouseWorkSaveRequest request) {
 		Group group = groupRepository.findById(groupId)
 			.orElseThrow(() -> new NoSuchElementException("Group does not exist"));
 
@@ -154,22 +155,29 @@ public class GroupService {
 			.toList();
 
 		LocalDate current = request.startDate();
-		List<HouseWork> houseWorks = new ArrayList<>();
 
 		while (!current.isAfter(request.dueDate())) {
 			if (policy.shouldAdd(request.startDate(), current, targetDays)) {
-				houseWorks.add(new HouseWork(
+				HouseWork houseWork = new HouseWork(
 					request.houseWorkName(),
 					place,
 					group,
 					current,
 					request.isNotified()
-				));
+				);
+				houseWorkRepository.save(houseWork);
+				List<Tag> tags = request.tags()
+					.stream()
+					.map(it -> tagRepository.findById(it)
+						.orElseThrow(() -> new NoSuchElementException("Tag does not exist")))
+					.toList();
+				for (Tag tag : tags) {
+					HouseWorkTag houseWorkTag = new HouseWorkTag(houseWork, tag);
+					houseWorkTagRepository.save(houseWorkTag);
+				}
+
 			}
 			current = current.plusDays(1);
 		}
-
-		houseWorkRepository.saveAll(houseWorks);
-		return new HouseWorkResponse(houseWorks.getFirst().getId());
 	}
 }
