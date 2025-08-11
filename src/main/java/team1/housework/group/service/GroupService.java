@@ -13,11 +13,13 @@ import team1.housework.character.service.CharacterService;
 import team1.housework.group.entity.Group;
 import team1.housework.group.entity.GroupMember;
 import team1.housework.group.entity.HouseWork;
+import team1.housework.group.entity.HouseWorkMember;
 import team1.housework.group.entity.HouseWorkTag;
 import team1.housework.group.entity.Place;
 import team1.housework.group.entity.Tag;
 import team1.housework.group.repository.GroupMemberRepository;
 import team1.housework.group.repository.GroupRepository;
+import team1.housework.group.repository.HouseWorkMemberRepository;
 import team1.housework.group.repository.HouseWorkRepository;
 import team1.housework.group.repository.HouseWorkTagRepository;
 import team1.housework.group.repository.PlaceRepository;
@@ -49,6 +51,7 @@ public class GroupService {
 	private final GroupMemberRepository groupMemberRepository;
 	private final HouseWorkRepository houseWorkRepository;
 	private final HouseWorkTagRepository houseWorkTagRepository;
+	private final HouseWorkMemberRepository houseWorkMemberRepository;
 
 	private final InviteCodeGenerator inviteCodeGenerator;
 
@@ -166,6 +169,13 @@ public class GroupService {
 					request.isNotified()
 				);
 				houseWorkRepository.save(houseWork);
+
+				//멤버들에게 houseWork 할당
+				List<HouseWorkMember> houseWorkMembers = request.members().stream()
+					.map(it -> new HouseWorkMember(houseWork, it))
+					.toList();
+				houseWorkMemberRepository.saveAll(houseWorkMembers);
+				//집안일에 태그 저장
 				List<Tag> tags = request.tags()
 					.stream()
 					.map(it -> tagRepository.findById(it)

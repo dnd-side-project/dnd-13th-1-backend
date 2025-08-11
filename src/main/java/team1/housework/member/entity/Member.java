@@ -21,4 +21,8 @@ public class Member {
 	private String name;
 
 	private String profileImageUrl;
+
+	public Member(String code) {
+		this.code = code;
+	}
 }

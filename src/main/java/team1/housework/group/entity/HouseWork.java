@@ -30,8 +30,6 @@ public class HouseWork {
 	@JoinColumn(name = "group_id")
 	private Group group;
 
-
-
 	private LocalDate taskDate;
 
 	private boolean isNotified;
