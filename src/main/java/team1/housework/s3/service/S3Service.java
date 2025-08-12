@@ -6,8 +6,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +26,17 @@ public class S3Service {
 	private String bucketName;
 
 	public String uploadImageAndGetUrl(MultipartFile image) {
-		String key = UUID.randomUUID() + "_" + image.getOriginalFilename();
+		String originalFilename = image.getOriginalFilename();
+		if (originalFilename == null) {
+			throw new IllegalArgumentException("File name is missing.");
+		}
+
+		String extension = "";
+		int lastDotIndex = originalFilename.lastIndexOf('.');
+		if (lastDotIndex != -1) {
+			extension = originalFilename.substring(lastDotIndex);
+		}
+		String key = UUID.randomUUID() + extension;
 
 		URL url;
 		try (InputStream inputStream = image.getInputStream()) {
@@ -43,6 +51,7 @@ public class S3Service {
 		} catch (IOException e) {
 			throw new RuntimeException("S3 Error", e);
 		}
+		System.out.println(url);
 		return url.toString();
 	}
 
@@ -56,8 +65,6 @@ public class S3Service {
 		} catch (MalformedURLException | URISyntaxException e) {
 			throw new RuntimeException("S3 Error", e);
 		}
-		String decodedKey = URLDecoder.decode(key, StandardCharsets.UTF_8);
-
-		s3Template.deleteObject(bucketName, decodedKey);
+		s3Template.deleteObject(bucketName, key);
 	}
 }
