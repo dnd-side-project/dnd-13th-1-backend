@@ -17,6 +17,7 @@ public class HouseWorkMemberCustomRepositoryImpl implements HouseWorkMemberCusto
 	@Override
 	public List<HouseWorkMember> findByHouseWorkIds(List<Long> houseWorkIds) {
 		return queryFactory.selectFrom(houseWorkMember)
+			.join(houseWorkMember.houseWork).fetchJoin()
 			.where(houseWorkMember.houseWork.id.in(houseWorkIds))
 			.fetch();
 	}

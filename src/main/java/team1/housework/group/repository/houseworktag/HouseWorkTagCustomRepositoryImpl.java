@@ -17,6 +17,8 @@ public class HouseWorkTagCustomRepositoryImpl implements HouseWorkTagCustomRepos
 	@Override
 	public List<HouseWorkTag> findByHouseWorkIds(List<Long> houseWorkIds) {
 		return queryFactory.selectFrom(houseWorkTag)
+			.join(houseWorkTag.houseWork).fetchJoin()
+			.join(houseWorkTag.tag).fetchJoin()
 			.where(houseWorkTag.houseWork.id.in(houseWorkIds))
 			.fetch();
 	}
