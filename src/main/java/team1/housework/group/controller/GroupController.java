@@ -20,7 +20,7 @@ import team1.housework.group.service.dto.EnterResponse;
 import team1.housework.group.service.dto.GroupRequest;
 import team1.housework.group.service.dto.GroupResponse;
 import team1.housework.group.service.dto.HouseWorkSaveRequest;
-import team1.housework.group.service.dto.HouseWorkStatusByDateRangeResponse;
+import team1.housework.group.service.dto.HouseWorkStatusByPeriodResponse;
 import team1.housework.group.service.dto.MemberResponse;
 import team1.housework.group.service.dto.MyGroupResponse;
 import team1.housework.group.service.dto.PlaceResponse;
@@ -71,11 +71,11 @@ public class GroupController {
 	}
 
 	@GetMapping("/{groupId}/my-house-work/period")
-	public List<HouseWorkStatusByDateRangeResponse> getHouseWorkStatusByDatePeriod(
+	public List<HouseWorkStatusByPeriodResponse> getHouseWorkStatusByPeriod(
 		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
 		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
 		@PathVariable Long groupId
 	) {
-		return groupService.getHouseWorkStatusByDatePeriod(from, to, groupId);
+		return groupService.getHouseWorkStatusByPeriod(from, to, groupId);
 	}
 }

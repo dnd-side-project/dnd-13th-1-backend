@@ -30,7 +30,7 @@ import team1.housework.group.service.dto.EnterResponse;
 import team1.housework.group.service.dto.GroupRequest;
 import team1.housework.group.service.dto.GroupResponse;
 import team1.housework.group.service.dto.HouseWorkSaveRequest;
-import team1.housework.group.service.dto.HouseWorkStatusByDateRangeResponse;
+import team1.housework.group.service.dto.HouseWorkStatusByPeriodResponse;
 import team1.housework.group.service.dto.MemberResponse;
 import team1.housework.group.service.dto.MyGroupResponse;
 import team1.housework.group.service.dto.PlaceResponse;
@@ -193,15 +193,15 @@ public class GroupService {
 		}
 	}
 
-	public List<HouseWorkStatusByDateRangeResponse> getHouseWorkStatusByDatePeriod(
+	public List<HouseWorkStatusByPeriodResponse> getHouseWorkStatusByPeriod(
 		LocalDate from,
 		LocalDate to,
 		Long groupId
 	) {
-		List<HouseWorkStatusByDateRangeResponse> responses = new ArrayList<>();
+		List<HouseWorkStatusByPeriodResponse> responses = new ArrayList<>();
 		List<LocalDate> result = houseWorkRepository.findTaskDatesBetween(from, to, groupId);
 		for (LocalDate date = from; !date.isAfter(to); date = date.plusDays(1)) {
-			responses.add(new HouseWorkStatusByDateRangeResponse(date, result.contains(date)));
+			responses.add(new HouseWorkStatusByPeriodResponse(date, result.contains(date)));
 		}
 		return responses;
 	}
