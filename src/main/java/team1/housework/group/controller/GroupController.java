@@ -3,7 +3,6 @@ package team1.housework.group.controller;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -72,8 +71,8 @@ public class GroupController {
 
 	@GetMapping("/{groupId}/my-house-work/period")
 	public List<HouseWorkStatusByPeriodResponse> getHouseWorkStatusByPeriod(
-		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+		@RequestParam LocalDate from,
+		@RequestParam LocalDate to,
 		@PathVariable Long groupId
 	) {
 		return groupService.getHouseWorkStatusByPeriod(from, to, groupId);
