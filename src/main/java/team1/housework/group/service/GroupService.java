@@ -2,6 +2,7 @@ package team1.housework.group.service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -29,6 +30,7 @@ import team1.housework.group.service.dto.EnterResponse;
 import team1.housework.group.service.dto.GroupRequest;
 import team1.housework.group.service.dto.GroupResponse;
 import team1.housework.group.service.dto.HouseWorkSaveRequest;
+import team1.housework.group.service.dto.HouseWorkStatusByDateRangeResponse;
 import team1.housework.group.service.dto.MemberResponse;
 import team1.housework.group.service.dto.MyGroupResponse;
 import team1.housework.group.service.dto.PlaceResponse;
@@ -189,5 +191,18 @@ public class GroupService {
 			}
 			current = current.plusDays(1);
 		}
+	}
+
+	public List<HouseWorkStatusByDateRangeResponse> getHouseWorkStatusByDatePeriod(
+		LocalDate from,
+		LocalDate to,
+		Long groupId
+	) {
+		List<HouseWorkStatusByDateRangeResponse> responses = new ArrayList<>();
+		List<LocalDate> result = houseWorkRepository.findTaskDatesBetween(from, to, groupId);
+		for (LocalDate date = from; !date.isAfter(to); date = date.plusDays(1)) {
+			responses.add(new HouseWorkStatusByDateRangeResponse(date, result.contains(date)));
+		}
+		return responses;
 	}
 }

@@ -1,12 +1,15 @@
 package team1.housework.group.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -17,6 +20,7 @@ import team1.housework.group.service.dto.EnterResponse;
 import team1.housework.group.service.dto.GroupRequest;
 import team1.housework.group.service.dto.GroupResponse;
 import team1.housework.group.service.dto.HouseWorkSaveRequest;
+import team1.housework.group.service.dto.HouseWorkStatusByDateRangeResponse;
 import team1.housework.group.service.dto.MemberResponse;
 import team1.housework.group.service.dto.MyGroupResponse;
 import team1.housework.group.service.dto.PlaceResponse;
@@ -64,5 +68,14 @@ public class GroupController {
 	@PostMapping("/{groupId}/house-work")
 	public void saveHouseWork(@PathVariable Long groupId, @RequestBody HouseWorkSaveRequest request) {
 		groupService.saveHouseWork(groupId, request);
+	}
+
+	@GetMapping("/{groupId}/my-house-work/period")
+	public List<HouseWorkStatusByDateRangeResponse> getHouseWorkStatusByDatePeriod(
+		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+		@PathVariable Long groupId
+	) {
+		return groupService.getHouseWorkStatusByDatePeriod(from, to, groupId);
 	}
 }
