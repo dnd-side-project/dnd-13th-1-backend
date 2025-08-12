@@ -6,4 +6,6 @@ import team1.housework.group.entity.HouseWorkMember;
 
 public interface HouseWorkMemberRepository
 	extends JpaRepository<HouseWorkMember, Long>, HouseWorkMemberCustomRepository {
+
+	boolean existsByHouseWorkIdAndMemberId(Long houseWorkId, Long memberId);
 }
