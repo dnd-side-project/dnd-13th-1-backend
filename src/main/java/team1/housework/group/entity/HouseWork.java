@@ -17,7 +17,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class HouseWork {
 
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	private String name;
@@ -32,13 +33,20 @@ public class HouseWork {
 
 	private LocalDate taskDate;
 
-	private boolean isNotified;
+	private boolean notified;
 
-	public HouseWork(String name, Place place, Group group, LocalDate taskDate, boolean isNotified) {
+	private boolean completed;
+
+	public HouseWork(String name, Place place, Group group, LocalDate taskDate, boolean notified) {
 		this.name = name;
 		this.place = place;
 		this.group = group;
 		this.taskDate = taskDate;
-		this.isNotified = isNotified;
+		this.notified = notified;
+		this.completed = false;
+	}
+
+	public void markCompleted() {
+		this.completed = true;
 	}
 }
