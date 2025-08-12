@@ -8,4 +8,6 @@ public interface HouseWorkMemberRepository
 	extends JpaRepository<HouseWorkMember, Long>, HouseWorkMemberCustomRepository {
 
 	boolean existsByHouseWorkIdAndMemberId(Long houseWorkId, Long memberId);
+
+	void deleteByHouseWorkId(Long houseWorkId);
 }
