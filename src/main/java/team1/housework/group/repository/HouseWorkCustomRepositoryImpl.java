@@ -15,7 +15,7 @@ public class HouseWorkCustomRepositoryImpl implements HouseWorkCustomRepository 
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public List<LocalDate> findTaskDatesBetween(LocalDate from, LocalDate to, Long groupId) {
+	public List<LocalDate> findTaskDatesBetween(Long groupId, LocalDate from, LocalDate to) {
 		return queryFactory.select(houseWork.taskDate)
 			.from(houseWork)
 			.where(

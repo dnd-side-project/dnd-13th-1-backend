@@ -5,5 +5,5 @@ import java.util.List;
 
 public interface HouseWorkCustomRepository {
 
-	List<LocalDate> findTaskDatesBetween(LocalDate from, LocalDate to, Long groupId);
+	List<LocalDate> findTaskDatesBetween(Long groupId, LocalDate from, LocalDate to);
 }
