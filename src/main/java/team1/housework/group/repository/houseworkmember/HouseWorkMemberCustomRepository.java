@@ -1,4 +1,4 @@
-package team1.housework.group.repository;
+package team1.housework.group.repository.houseworkmember;
 
 import java.util.List;
 

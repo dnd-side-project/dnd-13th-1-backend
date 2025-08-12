@@ -1,4 +1,4 @@
-package team1.housework.group.repository;
+package team1.housework.group.repository.tag;
 
 import java.util.List;
 

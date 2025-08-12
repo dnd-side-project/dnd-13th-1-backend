@@ -1,4 +1,4 @@
-package team1.housework.group.repository;
+package team1.housework.group.repository.houseworktag;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
