@@ -315,4 +315,16 @@ public class GroupService {
 			ourHouseWorkCompleted
 		);
 	}
+
+	@Transactional
+	public void completeHouseWork(Long memberId, Long houseWorkId) {
+		HouseWork houseWork = houseWorkRepository.findById(houseWorkId)
+			.orElseThrow(() -> new NoSuchElementException("HouseWork does not exist"));
+
+		if (!houseWorkMemberRepository.existsByHouseWorkIdAndMemberId(houseWorkId, memberId)) {
+			throw new IllegalStateException("Not authorized");
+		}
+
+		houseWork.markCompleted();
+	}
 }
