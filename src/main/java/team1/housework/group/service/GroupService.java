@@ -318,13 +318,25 @@ public class GroupService {
 
 	@Transactional
 	public void completeHouseWork(Long memberId, Long houseWorkId) {
-		HouseWork houseWork = houseWorkRepository.findById(houseWorkId)
-			.orElseThrow(() -> new NoSuchElementException("HouseWork does not exist"));
-
 		if (!houseWorkMemberRepository.existsByHouseWorkIdAndMemberId(houseWorkId, memberId)) {
 			throw new IllegalStateException("Not authorized");
 		}
 
+		HouseWork houseWork = houseWorkRepository.findById(houseWorkId)
+			.orElseThrow(() -> new NoSuchElementException("HouseWork does not exist"));
 		houseWork.markCompleted();
+	}
+
+	@Transactional
+	public void deleteHouseWork(Long memberId, Long houseWorkId) {
+		if (!houseWorkMemberRepository.existsByHouseWorkIdAndMemberId(houseWorkId, memberId)) {
+			throw new IllegalStateException("Not authorized");
+		}
+
+		HouseWork houseWork = houseWorkRepository.findById(houseWorkId)
+			.orElseThrow(() -> new NoSuchElementException("HouseWork does not exist"));
+
+		houseWorkMemberRepository.deleteByHouseWorkId(houseWorkId);
+		houseWorkRepository.delete(houseWork);
 	}
 }

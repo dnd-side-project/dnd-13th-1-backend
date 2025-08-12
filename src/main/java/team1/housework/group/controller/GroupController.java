@@ -3,6 +3,7 @@ package team1.housework.group.controller;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -92,5 +93,10 @@ public class GroupController {
 	@PutMapping("/house-work/{houseWorkId}/complete")
 	public void completeHouseWork(@Auth Member member, @PathVariable Long houseWorkId) {
 		groupService.completeHouseWork(member.getId(), houseWorkId);
+	}
+
+	@DeleteMapping("/house-work/{houseWorkId}")
+	public void deleteHouseWork(@Auth Member member, @PathVariable Long houseWorkId) {
+		groupService.deleteHouseWork(member.getId(), houseWorkId);
 	}
 }
