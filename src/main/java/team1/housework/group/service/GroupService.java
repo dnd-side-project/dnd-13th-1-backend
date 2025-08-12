@@ -4,7 +4,9 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,16 +31,20 @@ import team1.housework.group.service.dto.EnterRequest;
 import team1.housework.group.service.dto.EnterResponse;
 import team1.housework.group.service.dto.GroupRequest;
 import team1.housework.group.service.dto.GroupResponse;
+import team1.housework.group.service.dto.HouseWorkListByDateResponse;
+import team1.housework.group.service.dto.HouseWorkResponse;
 import team1.housework.group.service.dto.HouseWorkSaveRequest;
 import team1.housework.group.service.dto.HouseWorkStatusByPeriodResponse;
 import team1.housework.group.service.dto.MemberResponse;
 import team1.housework.group.service.dto.MyGroupResponse;
 import team1.housework.group.service.dto.PlaceResponse;
+import team1.housework.group.service.dto.TagForHouseWorkListResponse;
 import team1.housework.group.service.dto.TagResponse;
 import team1.housework.group.service.generator.InviteCodeGenerator;
 import team1.housework.group.service.policy.DayOfWeekPolicy;
 import team1.housework.group.service.policy.RoutinePolicy;
 import team1.housework.member.entity.Member;
+import team1.housework.member.repository.MemberRepository;
 import team1.housework.member.service.MemberService;
 import team1.housework.preset.service.PresetService;
 
@@ -60,6 +66,7 @@ public class GroupService {
 	private final CharacterService characterService;
 	private final PresetService presetService;
 	private final MemberService memberService;
+	private final MemberRepository memberRepository;
 
 	@Transactional
 	public GroupResponse save(Member member, GroupRequest groupRequest) {
@@ -194,15 +201,118 @@ public class GroupService {
 	}
 
 	public List<HouseWorkStatusByPeriodResponse> getHouseWorkStatusByPeriod(
+		Long groupId,
 		LocalDate from,
-		LocalDate to,
-		Long groupId
+		LocalDate to
 	) {
 		List<HouseWorkStatusByPeriodResponse> responses = new ArrayList<>();
-		List<LocalDate> result = houseWorkRepository.findTaskDatesBetween(from, to, groupId);
+		List<LocalDate> result = houseWorkRepository.findTaskDatesBetween(groupId, from, to);
 		for (LocalDate date = from; !date.isAfter(to); date = date.plusDays(1)) {
 			responses.add(new HouseWorkStatusByPeriodResponse(date, result.contains(date)));
 		}
 		return responses;
+	}
+
+	public HouseWorkListByDateResponse getHouseWorksByDate(Long memberId, Long groupId, LocalDate date) {
+		// HouseWork 목록 조회 및 HouseWork id 목록 추출
+		List<HouseWork> houseWorks = houseWorkRepository.findByGroupIdAndTaskDate(groupId, date);
+		List<Long> houseWorkIds = houseWorks.stream()
+			.map(HouseWork::getId)
+			.toList();
+
+		// HouseWorkMember 목록 조회
+		List<HouseWorkMember> houseWorkMembers = houseWorkMemberRepository.findByHouseWorkIds(houseWorkIds);
+
+		// Member id 목록 추출 및 구체 정보 조회
+		List<Long> memberIds = houseWorkMembers.stream()
+			.map(HouseWorkMember::getMemberId)
+			.distinct()
+			.toList();
+		Map<Long, Member> memberMap = memberRepository.findByIds(memberIds).stream()
+			.collect(Collectors.toMap(Member::getId, m -> m));
+
+		// HouseWorkTag 목록 조회
+		List<HouseWorkTag> houseWorkTags = houseWorkTagRepository.findByHouseWorkIds(houseWorkIds);
+
+		// Tag id 목록 추출 및 구체 정보 조회
+		List<Long> tagIds = houseWorkTags.stream()
+			.map(ht -> ht.getTag().getId())
+			.distinct()
+			.toList();
+		Map<Long, Tag> tagMap = tagRepository.findByIds(tagIds).stream()
+			.collect(Collectors.toMap(Tag::getId, t -> t));
+
+		// 집안일 id로 그룹화
+		Map<Long, List<HouseWorkMember>> houseWorkMemberMap = houseWorkMembers.stream()
+			.collect(Collectors.groupingBy(hm -> hm.getHouseWork().getId()));
+		Map<Long, List<HouseWorkTag>> houseWorkTagMap = houseWorkTags.stream()
+			.collect(Collectors.groupingBy(ht -> ht.getHouseWork().getId()));
+
+		List<HouseWorkResponse> myHouseWorkLeft = new ArrayList<>();
+		List<HouseWorkResponse> ourHouseWorkLeft = new ArrayList<>();
+		List<HouseWorkResponse> myHouseWorkCompleted = new ArrayList<>();
+		List<HouseWorkResponse> ourHouseWorkCompleted = new ArrayList<>();
+		for (HouseWork houseWork : houseWorks) {
+			Long houseWorkId = houseWork.getId();
+
+			List<MemberResponse> memberResponses = houseWorkMemberMap.getOrDefault(houseWorkId, List.of()).stream()
+				.map(hm -> {
+					Member member = memberMap.get(hm.getMemberId());
+					return new MemberResponse(
+						member.getId(),
+						member.getName(),
+						member.getProfileImageUrl()
+					);
+				})
+				.toList();
+
+			List<TagForHouseWorkListResponse> tagResponses = houseWorkTagMap.getOrDefault(houseWorkId, List.of())
+				.stream()
+				.map(ht -> {
+					Tag tag = tagMap.get(ht.getTag().getId());
+					return new TagForHouseWorkListResponse(tag.getName());
+				})
+				.toList();
+
+			HouseWorkResponse houseWorkResponse = new HouseWorkResponse(
+				houseWorkId,
+				houseWork.getName(),
+				tagResponses,
+				houseWork.getTaskDate(),
+				memberResponses
+			);
+
+			boolean isMyTask = houseWorkMemberMap.get(houseWorkId).stream()
+				.anyMatch(hm -> hm.getMemberId().equals(memberId));
+			boolean completed = houseWork.isCompleted();
+			if (isMyTask) {
+
+				// myHouseWorkLeft
+				if (!completed) {
+					myHouseWorkLeft.add(houseWorkResponse);
+					continue;
+				}
+
+				// myHouseWorkCompleted
+				myHouseWorkCompleted.add(houseWorkResponse);
+				continue;
+			}
+
+			// ourHouseWorkLeft
+			if (!completed) {
+				ourHouseWorkLeft.add(houseWorkResponse);
+				continue;
+			}
+
+			// ourHouseWorkCompleted
+			ourHouseWorkCompleted.add(houseWorkResponse);
+		}
+
+		return new HouseWorkListByDateResponse(
+			myHouseWorkLeft,
+			ourHouseWorkLeft,
+			myHouseWorkCompleted,
+			ourHouseWorkCompleted
+		);
 	}
 }

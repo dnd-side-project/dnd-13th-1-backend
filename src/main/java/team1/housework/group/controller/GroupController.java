@@ -18,6 +18,7 @@ import team1.housework.group.service.dto.EnterRequest;
 import team1.housework.group.service.dto.EnterResponse;
 import team1.housework.group.service.dto.GroupRequest;
 import team1.housework.group.service.dto.GroupResponse;
+import team1.housework.group.service.dto.HouseWorkListByDateResponse;
 import team1.housework.group.service.dto.HouseWorkSaveRequest;
 import team1.housework.group.service.dto.HouseWorkStatusByPeriodResponse;
 import team1.housework.group.service.dto.MemberResponse;
@@ -71,10 +72,19 @@ public class GroupController {
 
 	@GetMapping("/{groupId}/my-house-work/period")
 	public List<HouseWorkStatusByPeriodResponse> getHouseWorkStatusByPeriod(
+		@PathVariable Long groupId,
 		@RequestParam LocalDate from,
-		@RequestParam LocalDate to,
-		@PathVariable Long groupId
+		@RequestParam LocalDate to
 	) {
-		return groupService.getHouseWorkStatusByPeriod(from, to, groupId);
+		return groupService.getHouseWorkStatusByPeriod(groupId, from, to);
+	}
+
+	@GetMapping("/{groupId}/my-house-work/date")
+	public HouseWorkListByDateResponse getHouseWorksByDate(
+		@Auth Member member,
+		@PathVariable Long groupId,
+		@RequestParam LocalDate date
+	) {
+		return groupService.getHouseWorksByDate(member.getId(), groupId, date);
 	}
 }
