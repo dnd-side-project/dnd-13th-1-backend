@@ -19,6 +19,8 @@ public class LocalStorageService implements StorageService {
 
 	@Override
 	public String uploadImageAndGetUrl(MultipartFile image) {
+		StorageUtils.verifyImage(image);
+
 		// 절대 경로로 변환
 		File directory = new File(uploadDirectory).getAbsoluteFile();
 		if (!directory.exists()) {
@@ -29,12 +31,8 @@ public class LocalStorageService implements StorageService {
 		}
 
 		// 파일명 생성
-		String originalFilename = image.getOriginalFilename();
-		if (originalFilename == null) {
-			throw new IllegalArgumentException("File name is missing.");
-		}
+		String fileName = StorageUtils.getFileName(image.getOriginalFilename());
 
-		String fileName = StorageUtils.getFileName(originalFilename);
 		// 파일 저장
 		try {
 			File file = new File(directory, fileName);

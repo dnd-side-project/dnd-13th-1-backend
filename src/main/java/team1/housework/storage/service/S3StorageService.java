@@ -29,12 +29,10 @@ public class S3StorageService implements StorageService {
 
 	@Override
 	public String uploadImageAndGetUrl(MultipartFile image) {
-		String originalFilename = image.getOriginalFilename();
-		if (originalFilename == null) {
-			throw new IllegalArgumentException("File name is missing.");
-		}
+		StorageUtils.verifyImage(image);
+		String contentType = StorageUtils.verifyAndGetContentType(image);
 
-		String key = StorageUtils.getFileName(originalFilename);
+		String key = StorageUtils.getFileName(image.getOriginalFilename());
 
 		URL url;
 		try (InputStream inputStream = image.getInputStream()) {
@@ -43,7 +41,7 @@ public class S3StorageService implements StorageService {
 				key,
 				inputStream,
 				ObjectMetadata.builder()
-					.contentType(image.getContentType())
+					.contentType(contentType)
 					.build()
 			).getURL();
 		} catch (IOException e) {
