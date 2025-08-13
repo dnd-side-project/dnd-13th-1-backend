@@ -37,6 +37,8 @@ public class HouseWork {
 
 	private boolean completed;
 
+	private LocalDate completedDate;
+
 	public HouseWork(String name, Place place, Group group, LocalDate taskDate, boolean notified) {
 		this.name = name;
 		this.place = place;
@@ -48,5 +50,6 @@ public class HouseWork {
 
 	public void markCompleted() {
 		this.completed = true;
+		this.completedDate = LocalDate.now();
 	}
 }
