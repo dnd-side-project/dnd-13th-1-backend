@@ -21,6 +21,7 @@ import team1.housework.group.service.dto.EnterResponse;
 import team1.housework.group.service.dto.GroupRequest;
 import team1.housework.group.service.dto.GroupResponse;
 import team1.housework.group.service.dto.HouseWorkListByDateResponse;
+import team1.housework.group.service.dto.HouseWorkListRecentResponse;
 import team1.housework.group.service.dto.HouseWorkSaveRequest;
 import team1.housework.group.service.dto.HouseWorkStatusByPeriodResponse;
 import team1.housework.group.service.dto.MemberResponse;
@@ -98,5 +99,13 @@ public class GroupController {
 	@DeleteMapping("/house-work/{houseWorkId}")
 	public void deleteHouseWork(@Auth Member member, @PathVariable Long houseWorkId) {
 		groupService.deleteHouseWork(member.getId(), houseWorkId);
+	}
+
+	@GetMapping("/{groupId}/house-work/recent")
+	public List<HouseWorkListRecentResponse> getHouseWorksRecent(
+		@PathVariable Long groupId,
+		@RequestParam Long receiverId
+	) {
+		return groupService.getHouseWorksRecent(groupId, receiverId, LocalDate.of(2025, 8, 15));
 	}
 }
