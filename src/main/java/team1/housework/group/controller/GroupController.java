@@ -1,12 +1,16 @@
 package team1.housework.group.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -16,7 +20,9 @@ import team1.housework.group.service.dto.EnterRequest;
 import team1.housework.group.service.dto.EnterResponse;
 import team1.housework.group.service.dto.GroupRequest;
 import team1.housework.group.service.dto.GroupResponse;
+import team1.housework.group.service.dto.HouseWorkListByDateResponse;
 import team1.housework.group.service.dto.HouseWorkSaveRequest;
+import team1.housework.group.service.dto.HouseWorkStatusByPeriodResponse;
 import team1.housework.group.service.dto.MemberResponse;
 import team1.housework.group.service.dto.MyGroupResponse;
 import team1.housework.group.service.dto.PlaceResponse;
@@ -64,5 +70,33 @@ public class GroupController {
 	@PostMapping("/{groupId}/house-work")
 	public void saveHouseWork(@PathVariable Long groupId, @RequestBody HouseWorkSaveRequest request) {
 		groupService.saveHouseWork(groupId, request);
+	}
+
+	@GetMapping("/{groupId}/my-house-work/period")
+	public List<HouseWorkStatusByPeriodResponse> getHouseWorkStatusByPeriod(
+		@PathVariable Long groupId,
+		@RequestParam LocalDate from,
+		@RequestParam LocalDate to
+	) {
+		return groupService.getHouseWorkStatusByPeriod(groupId, from, to);
+	}
+
+	@GetMapping("/{groupId}/my-house-work/date")
+	public HouseWorkListByDateResponse getHouseWorksByDate(
+		@Auth Member member,
+		@PathVariable Long groupId,
+		@RequestParam LocalDate date
+	) {
+		return groupService.getHouseWorksByDate(member.getId(), groupId, date);
+	}
+
+	@PutMapping("/house-work/{houseWorkId}/complete")
+	public void completeHouseWork(@Auth Member member, @PathVariable Long houseWorkId) {
+		groupService.completeHouseWork(member.getId(), houseWorkId);
+	}
+
+	@DeleteMapping("/house-work/{houseWorkId}")
+	public void deleteHouseWork(@Auth Member member, @PathVariable Long houseWorkId) {
+		groupService.deleteHouseWork(member.getId(), houseWorkId);
 	}
 }

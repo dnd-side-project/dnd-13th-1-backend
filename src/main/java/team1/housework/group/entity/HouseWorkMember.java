@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class HouseWorkMember {
 
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -27,14 +26,8 @@ public class HouseWorkMember {
 
 	private Long memberId;
 
-	private boolean completed =false;
-
 	public HouseWorkMember(HouseWork houseWork, Long memberId) {
 		this.houseWork = houseWork;
 		this.memberId = memberId;
-	}
-
-	public void markCompleted() {
-		this.completed = true;
 	}
 }
