@@ -11,3 +11,12 @@ spring:
   h2:
     console:
       enabled: true
+
+  cloud:
+    aws:
+      s3:
+        enabled: false
+
+file:
+  upload:
+    directory: ./uploads
