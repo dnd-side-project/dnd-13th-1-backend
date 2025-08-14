@@ -194,3 +194,16 @@ INSERT INTO house_work_tag (house_work_id, tag_id)
 VALUES (1, 1),
        (3, 2),
        (5, 3);
+
+INSERT INTO emotion_card (sender_id, receiver_id, house_work_id, disappointment, created_date)
+VALUES (1, 2, 3, '조금 더 신경 써주세요', '2025-08-14T10:30:00'),
+       (1, 3, 4, '다음엔 더 깨끗하게 부탁해요', '2025-08-14T10:32:15'),
+       (1, 4, 8, '시간 약속을 지켜주세요', '2025-08-14T10:35:45');
+
+INSERT INTO compliment (emotion_card_id, content)
+VALUES (1, '정성껏 해줘서 고마워요'),
+       (1, '깔끔하게 마무리했네요'),
+       (2, '최대한 하려고 노력했네요'),
+       (2, '세심하게 해줘서 좋았어요'),
+       (3, '결과물은 훌륭했어요'),
+       (3, '고생했어요!');
