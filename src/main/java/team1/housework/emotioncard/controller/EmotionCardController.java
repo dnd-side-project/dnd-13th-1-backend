@@ -27,7 +27,7 @@ public class EmotionCardController {
 		@Auth Member member,
 		@RequestBody EmotionCardSaveRequest request
 	) {
-		return emotionCardService.save(member.getId(), request);
+		return emotionCardService.save(1L, request);
 	}
 
 	@GetMapping("/{emotionCardId}")
