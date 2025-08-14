@@ -1,10 +1,10 @@
 package team1.housework.emotioncard.repository;
 
-import java.util.Optional;
+import java.util.List;
 
-import team1.housework.emotioncard.entity.EmotionCard;
+import team1.housework.emotioncard.service.dto.EmotionCardListResponse;
 
 public interface EmotionCardCustomRepository {
 
-	Optional<EmotionCard> findByIdWithFetchJoin(Long id);
+	List<EmotionCardListResponse> getAllWithCondition(Long memberId, String filter, String sorted);
 }
