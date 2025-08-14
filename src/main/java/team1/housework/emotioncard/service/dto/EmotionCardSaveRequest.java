@@ -16,8 +16,7 @@ public record EmotionCardSaveRequest(
 			senderId,
 			receiverId,
 			houseWorkId,
-			disappointment,
-			compliments
+			disappointment
 		);
 	}
 }

@@ -17,6 +17,7 @@ public record EmotionCardResponse(
 
 	public static EmotionCardResponse from(
 		EmotionCard emotionCard,
+		List<String> compliments,
 		String houseWorkName,
 		String senderNickName,
 		String receiverNickName
@@ -24,7 +25,7 @@ public record EmotionCardResponse(
 		return new EmotionCardResponse(
 			emotionCard.getId(),
 			houseWorkName,
-			emotionCard.getCompliments(),
+			compliments,
 			emotionCard.getDisappointment(),
 			senderNickName,
 			receiverNickName,
