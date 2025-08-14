@@ -4,5 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import team1.housework.emotioncard.entity.EmotionCard;
 
-public interface EmotionCardRepository extends JpaRepository<EmotionCard, Integer>, EmotionCardCustomRepository {
+public interface EmotionCardRepository extends JpaRepository<EmotionCard, Long>, EmotionCardCustomRepository {
 }
