@@ -2,6 +2,7 @@ package team1.housework.emotioncard.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +12,8 @@ import team1.housework.emotioncard.entity.Compliment;
 import team1.housework.emotioncard.entity.EmotionCard;
 import team1.housework.emotioncard.repository.ComplimentRepository;
 import team1.housework.emotioncard.repository.EmotionCardRepository;
+import team1.housework.emotioncard.service.dto.EmotionCardListRequest;
+import team1.housework.emotioncard.service.dto.EmotionCardListResponse;
 import team1.housework.emotioncard.service.dto.EmotionCardResponse;
 import team1.housework.emotioncard.service.dto.EmotionCardSaveRequest;
 import team1.housework.emotioncard.service.dto.EmotionCardSaveResponse;
@@ -62,5 +65,31 @@ public class EmotionCardService {
 			senderNickName,
 			receiverNickName
 		);
+	}
+
+	public List<EmotionCardListResponse> getMyEmotionCards(Long memberId, EmotionCardListRequest request) {
+		String filter = request.filter();
+		String sorted = request.sorted();
+
+		List<EmotionCardListResponse> responses = emotionCardRepository.getAllWithCondition(memberId, filter, sorted);
+		for (EmotionCardListResponse response : responses) {
+			Long emotionCardId = response.emotionCardId();
+
+			String newContent = complimentRepository.findByEmotionCardId(emotionCardId).stream()
+				.map(Compliment::getContent)
+				.collect(Collectors.joining(" "));
+
+			if (!newContent.isEmpty()) {
+				responses.set(responses.indexOf(response), new EmotionCardListResponse(
+					response.emotionCardId(),
+					response.houseWorkName(),
+					newContent,
+					response.senderNickName(),
+					response.receiverNickName(),
+					response.createdTime()
+				));
+			}
+		}
+		return responses;
 	}
 }
