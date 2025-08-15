@@ -1,4 +1,4 @@
-package team1.allo.group.service.dto;
+package team1.allo.housework.service.dto;
 
 import java.util.List;
 

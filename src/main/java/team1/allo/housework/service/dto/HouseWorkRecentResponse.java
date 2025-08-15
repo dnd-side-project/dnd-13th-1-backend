@@ -1,6 +1,6 @@
-package team1.allo.group.service.dto;
+package team1.allo.housework.service.dto;
 
-import team1.allo.group.entity.HouseWork;
+import team1.allo.housework.entity.HouseWork;
 
 public record HouseWorkRecentResponse(
 	String placeName,
