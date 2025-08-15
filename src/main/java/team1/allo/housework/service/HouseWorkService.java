@@ -226,6 +226,7 @@ public class HouseWorkService {
 		HouseWork houseWork = findById(houseWorkId);
 
 		houseWorkMemberRepository.deleteByHouseWorkId(houseWorkId);
+		houseWorkTagRepository.deleteByHouseWorkId(houseWorkId);
 		houseWorkRepository.delete(houseWork);
 	}
 
