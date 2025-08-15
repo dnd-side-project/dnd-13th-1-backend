@@ -1,7 +1,7 @@
 package team1.allo.housework.repository.housework;
 
-import static team1.allo.group.entity.QHouseWork.*;
-import static team1.allo.group.entity.QHouseWorkMember.*;
+import static team1.allo.housework.entity.QHouseWork.*;
+import static team1.allo.housework.entity.QHouseWorkMember.*;
 
 import java.time.LocalDate;
 import java.util.List;

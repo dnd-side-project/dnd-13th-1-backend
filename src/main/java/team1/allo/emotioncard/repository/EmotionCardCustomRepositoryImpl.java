@@ -1,7 +1,7 @@
 package team1.allo.emotioncard.repository;
 
 import static team1.allo.emotioncard.entity.QEmotionCard.*;
-import static team1.allo.group.entity.QHouseWork.*;
+import static team1.allo.housework.entity.QHouseWork.*;
 
 import java.time.LocalDateTime;
 import java.util.List;

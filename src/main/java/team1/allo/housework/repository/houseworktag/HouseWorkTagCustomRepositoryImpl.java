@@ -1,6 +1,6 @@
 package team1.allo.housework.repository.houseworktag;
 
-import static team1.allo.group.entity.QHouseWorkTag.*;
+import static team1.allo.housework.entity.QHouseWorkTag.*;
 
 import java.util.List;
 

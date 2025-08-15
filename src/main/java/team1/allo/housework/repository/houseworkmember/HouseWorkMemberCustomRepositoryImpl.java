@@ -1,6 +1,6 @@
 package team1.allo.housework.repository.houseworkmember;
 
-import static team1.allo.group.entity.QHouseWorkMember.*;
+import static team1.allo.housework.entity.QHouseWorkMember.*;
 
 import java.util.List;
 
