@@ -173,7 +173,7 @@ public class HouseWorkService {
 				memberResponses
 			);
 
-			boolean isMyTask = houseWorkMemberMap.get(houseWorkId).stream()
+			boolean isMyTask = houseWorkMemberMap.getOrDefault(houseWorkId, List.of()).stream()
 				.anyMatch(hm -> hm.getMemberId().equals(memberId));
 			boolean completed = houseWork.isCompleted();
 			if (isMyTask) {
