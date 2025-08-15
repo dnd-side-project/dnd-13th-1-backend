@@ -17,7 +17,7 @@ import team1.allo.emotioncard.service.dto.EmotionCardListResponse;
 import team1.allo.emotioncard.service.dto.EmotionCardResponse;
 import team1.allo.emotioncard.service.dto.EmotionCardSaveRequest;
 import team1.allo.emotioncard.service.dto.EmotionCardSaveResponse;
-import team1.allo.group.repository.housework.HouseWorkRepository;
+import team1.allo.housework.service.HouseWorkService;
 import team1.allo.member.service.MemberService;
 
 @Service
@@ -28,7 +28,7 @@ public class EmotionCardService {
 	private final EmotionCardRepository emotionCardRepository;
 	private final ComplimentRepository complimentRepository;
 	private final MemberService memberService;
-	private final HouseWorkRepository houseWorkRepository;
+	private final HouseWorkService houseWorkService;
 
 	@Transactional
 	public EmotionCardSaveResponse save(Long senderId, EmotionCardSaveRequest request) {
@@ -50,8 +50,7 @@ public class EmotionCardService {
 			.map(Compliment::getContent)
 			.toList();
 
-		String houseWorkName = houseWorkRepository.findById(emotionCard.getHouseWorkId())
-			.orElseThrow(() -> new NoSuchElementException("HouseWork does not exist"))
+		String houseWorkName = houseWorkService.findById(emotionCard.getHouseWorkId())
 			.getName();
 		String senderNickName = memberService.findById(emotionCard.getSenderId())
 			.getName();
