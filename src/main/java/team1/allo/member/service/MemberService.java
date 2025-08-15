@@ -1,5 +1,6 @@
 package team1.allo.member.service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.stereotype.Service;
@@ -24,5 +25,9 @@ public class MemberService {
 
 	public MyGroupResponse getMyGroup(Member member) {
 		return null;
+	}
+
+	public List<Member> findAllById(List<Long> memberIds) {
+		return memberRepository.findAllById(memberIds);
 	}
 }
