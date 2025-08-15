@@ -20,14 +20,15 @@ import team1.allo.group.service.dto.EnterRequest;
 import team1.allo.group.service.dto.EnterResponse;
 import team1.allo.group.service.dto.GroupRequest;
 import team1.allo.group.service.dto.GroupResponse;
-import team1.allo.group.service.dto.HouseWorkListByDateResponse;
-import team1.allo.group.service.dto.HouseWorkListRecentResponse;
-import team1.allo.group.service.dto.HouseWorkSaveRequest;
-import team1.allo.group.service.dto.HouseWorkStatusByPeriodResponse;
 import team1.allo.group.service.dto.MemberResponse;
 import team1.allo.group.service.dto.MyGroupResponse;
 import team1.allo.group.service.dto.PlaceResponse;
 import team1.allo.group.service.dto.TagResponse;
+import team1.allo.housework.service.HouseWorkService;
+import team1.allo.housework.service.dto.HouseWorkListByDateResponse;
+import team1.allo.housework.service.dto.HouseWorkListRecentResponse;
+import team1.allo.housework.service.dto.HouseWorkSaveRequest;
+import team1.allo.housework.service.dto.HouseWorkStatusByPeriodResponse;
 import team1.allo.member.entity.Member;
 
 @RestController
@@ -36,6 +37,7 @@ import team1.allo.member.entity.Member;
 public class GroupController {
 
 	private final GroupService groupService;
+	private final HouseWorkService houseWorkService;
 
 	//TODO: 액세스토큰 파싱해 Member 바인딩
 	@PostMapping
@@ -70,7 +72,7 @@ public class GroupController {
 
 	@PostMapping("/{groupId}/house-work")
 	public void saveHouseWork(@PathVariable Long groupId, @RequestBody HouseWorkSaveRequest request) {
-		groupService.saveHouseWork(groupId, request);
+		houseWorkService.saveHouseWork(groupId, request);
 	}
 
 	@GetMapping("/{groupId}/my-house-work/period")
@@ -79,7 +81,7 @@ public class GroupController {
 		@RequestParam LocalDate from,
 		@RequestParam LocalDate to
 	) {
-		return groupService.getHouseWorkStatusByPeriod(groupId, from, to);
+		return houseWorkService.getHouseWorkStatusByPeriod(groupId, from, to);
 	}
 
 	@GetMapping("/{groupId}/my-house-work/date")
@@ -88,17 +90,17 @@ public class GroupController {
 		@PathVariable Long groupId,
 		@RequestParam LocalDate date
 	) {
-		return groupService.getHouseWorksByDate(member.getId(), groupId, date);
+		return houseWorkService.getHouseWorksByDate(member.getId(), groupId, date);
 	}
 
 	@PutMapping("/house-work/{houseWorkId}/complete")
 	public void completeHouseWork(@Auth Member member, @PathVariable Long houseWorkId) {
-		groupService.completeHouseWork(member.getId(), houseWorkId);
+		houseWorkService.completeHouseWork(member.getId(), houseWorkId);
 	}
 
 	@DeleteMapping("/house-work/{houseWorkId}")
 	public void deleteHouseWork(@Auth Member member, @PathVariable Long houseWorkId) {
-		groupService.deleteHouseWork(member.getId(), houseWorkId);
+		houseWorkService.deleteHouseWork(member.getId(), houseWorkId);
 	}
 
 	@GetMapping("/{groupId}/house-work/recent")
@@ -106,6 +108,6 @@ public class GroupController {
 		@PathVariable Long groupId,
 		@RequestParam Long receiverId
 	) {
-		return groupService.getHouseWorksRecent(groupId, receiverId, LocalDate.of(2025, 8, 15));
+		return houseWorkService.getHouseWorksRecent(groupId, receiverId, LocalDate.of(2025, 8, 15));
 	}
 }
