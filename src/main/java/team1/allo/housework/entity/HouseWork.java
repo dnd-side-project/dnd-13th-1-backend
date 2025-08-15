@@ -1,4 +1,4 @@
-package team1.allo.group.entity;
+package team1.allo.housework.entity;
 
 import java.time.LocalDate;
 
@@ -11,6 +11,8 @@ import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import team1.allo.group.entity.Group;
+import team1.allo.group.entity.Place;
 
 @Entity
 @Getter

@@ -1,8 +1,8 @@
-package team1.allo.group.repository.houseworkmember;
+package team1.allo.housework.repository.houseworkmember;
 
 import java.util.List;
 
-import team1.allo.group.entity.HouseWorkMember;
+import team1.allo.housework.entity.HouseWorkMember;
 
 public interface HouseWorkMemberCustomRepository {
 

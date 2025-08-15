@@ -1,4 +1,4 @@
-package team1.allo.group.repository.housework;
+package team1.allo.housework.repository.housework;
 
 import static team1.allo.group.entity.QHouseWork.*;
 import static team1.allo.group.entity.QHouseWorkMember.*;
@@ -9,7 +9,7 @@ import java.util.List;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
-import team1.allo.group.entity.HouseWork;
+import team1.allo.housework.entity.HouseWork;
 
 @RequiredArgsConstructor
 public class HouseWorkCustomRepositoryImpl implements HouseWorkCustomRepository {

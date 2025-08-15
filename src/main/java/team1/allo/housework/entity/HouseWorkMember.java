@@ -1,4 +1,4 @@
-package team1.allo.group.entity;
+package team1.allo.housework.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

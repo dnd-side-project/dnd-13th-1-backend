@@ -1,4 +1,4 @@
-package team1.allo.group.repository.houseworktag;
+package team1.allo.housework.repository.houseworktag;
 
 import static team1.allo.group.entity.QHouseWorkTag.*;
 
@@ -7,7 +7,7 @@ import java.util.List;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
-import team1.allo.group.entity.HouseWorkTag;
+import team1.allo.housework.entity.HouseWorkTag;
 
 @RequiredArgsConstructor
 public class HouseWorkTagCustomRepositoryImpl implements HouseWorkTagCustomRepository {

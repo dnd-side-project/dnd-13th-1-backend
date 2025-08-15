@@ -1,8 +1,8 @@
-package team1.allo.group.repository.houseworktag;
+package team1.allo.housework.repository.houseworktag;
 
 import java.util.List;
 
-import team1.allo.group.entity.HouseWorkTag;
+import team1.allo.housework.entity.HouseWorkTag;
 
 public interface HouseWorkTagCustomRepository {
 

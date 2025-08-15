@@ -1,4 +1,4 @@
-package team1.allo.group.entity;
+package team1.allo.housework.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,6 +9,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import team1.allo.group.entity.Tag;
 
 @Entity
 @Getter
