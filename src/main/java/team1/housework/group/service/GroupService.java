@@ -3,6 +3,7 @@ package team1.housework.group.service;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -32,6 +33,8 @@ import team1.housework.group.service.dto.EnterResponse;
 import team1.housework.group.service.dto.GroupRequest;
 import team1.housework.group.service.dto.GroupResponse;
 import team1.housework.group.service.dto.HouseWorkListByDateResponse;
+import team1.housework.group.service.dto.HouseWorkListRecentResponse;
+import team1.housework.group.service.dto.HouseWorkRecentResponse;
 import team1.housework.group.service.dto.HouseWorkResponse;
 import team1.housework.group.service.dto.HouseWorkSaveRequest;
 import team1.housework.group.service.dto.HouseWorkStatusByPeriodResponse;
@@ -338,5 +341,25 @@ public class GroupService {
 
 		houseWorkMemberRepository.deleteByHouseWorkId(houseWorkId);
 		houseWorkRepository.delete(houseWork);
+	}
+
+	public List<HouseWorkListRecentResponse> getHouseWorksRecent(Long groupId, Long receiverId, LocalDate currentDate) {
+		List<HouseWork> houseWorks = houseWorkRepository.findHouseWorkRecent(groupId, receiverId, currentDate);
+
+		Map<LocalDate, List<HouseWork>> houseWorkMap = houseWorks.stream()
+			.collect(Collectors.groupingBy(
+				HouseWork::getCompletedDate,
+				LinkedHashMap::new,
+				Collectors.toList()
+			));
+
+		List<HouseWorkListRecentResponse> response = new ArrayList<>();
+		houseWorkMap.forEach((k, v) -> {
+			List<HouseWorkRecentResponse> houseWorkRecentResponses = v.stream()
+				.map(HouseWorkRecentResponse::from)
+				.toList();
+			response.add(new HouseWorkListRecentResponse(k, houseWorkRecentResponses));
+		});
+		return response;
 	}
 }
