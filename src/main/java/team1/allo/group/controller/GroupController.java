@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import team1.allo.auth.aop.Auth;
+import team1.allo.auth.annotation.Auth;
 import team1.allo.group.service.GroupService;
 import team1.allo.group.service.dto.EnterRequest;
 import team1.allo.group.service.dto.EnterResponse;

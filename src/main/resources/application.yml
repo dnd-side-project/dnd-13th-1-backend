@@ -29,3 +29,8 @@ spring:
 file:
   upload:
     directory: ./uploads
+
+app:
+  jwt:
+    secret: ${JWT_SECRET_KEY}  # 최소 32byte 이상
+    expiration-millis: 3600000 # 1시간

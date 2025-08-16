@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import team1.allo.auth.aop.Auth;
+import team1.allo.auth.annotation.Auth;
 import team1.allo.emotioncard.service.EmotionCardService;
 import team1.allo.emotioncard.service.dto.EmotionCardListRequest;
 import team1.allo.emotioncard.service.dto.EmotionCardListResponse;
