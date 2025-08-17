@@ -27,16 +27,11 @@ public class AuthService {
 		}
 
 		Long kakaoId = userInfo.id();
-		String nickname = userInfo.kakaoAccount().profile().nickname();
 		String code = "KAKAO_" + kakaoId;
 
 		Member member = memberRepository.findByCode(code)
-			.map(m -> m.toBuilder()
-				.name(nickname)
-				.build())
 			.orElse(Member.builder()
 				.code(code)
-				.name(nickname)
 				.build());
 
 		member = memberRepository.save(member);
