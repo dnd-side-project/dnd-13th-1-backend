@@ -108,6 +108,6 @@ public class GroupController {
 		@PathVariable Long groupId,
 		@RequestParam Long receiverId
 	) {
-		return houseWorkService.getHouseWorksRecent(groupId, receiverId, LocalDate.of(2025, 8, 15));
+		return houseWorkService.getHouseWorksRecent(groupId, receiverId, LocalDate.now());
 	}
 }
