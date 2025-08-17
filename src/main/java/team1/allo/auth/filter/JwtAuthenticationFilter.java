@@ -28,6 +28,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request,
 		HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
+
+		// 1. 로그인(혹은 인증 불필요) 경로는 JWT 검사 없이 바로 통과
+		String uri = request.getRequestURI();
+		if (uri.startsWith("/api/auth/login") || uri.startsWith("/api/auth/signup")) {
+			filterChain.doFilter(request, response);
+			return;
+		}
+
+		// 2. Authorization 헤더 검사
 		String authHeader = request.getHeader("Authorization");
 
 		if (authHeader != null && authHeader.startsWith("Bearer ")) {
