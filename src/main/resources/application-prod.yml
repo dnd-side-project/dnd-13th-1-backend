@@ -4,6 +4,15 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none   # Hibernate drop 동작 차단
+    properties:
+      # 표준 JPA 스키마 생성 옵션
+      jakarta.persistence.schema-generation.database.action: create
+      jakarta.persistence.schema-generation.create-source: metadata
+      hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
+    open-in-view: false
   cloud:
     aws:
       credentials:
