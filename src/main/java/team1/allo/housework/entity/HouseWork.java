@@ -30,7 +30,7 @@ public class HouseWork {
 	private Place place;
 
 	@ManyToOne
-	@JoinColumn(name = "group_id")
+	@JoinColumn(name = "house_work_group_id")
 	private Group group;
 
 	private LocalDate taskDate;
