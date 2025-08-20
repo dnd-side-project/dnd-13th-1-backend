@@ -14,4 +14,6 @@ public interface HouseWorkCustomRepository {
 	Long countCompletedHouseWorkByGroup(Long memberId, LocalDate currentDate);
 
 	Long countCompletedHouseWorkByMember(Long memberId, LocalDate currentDate);
+
+	Long countHouseWorkByMember(Long memberId, LocalDate currentDate);
 }

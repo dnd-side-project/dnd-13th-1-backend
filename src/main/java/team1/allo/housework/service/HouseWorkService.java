@@ -28,6 +28,7 @@ import team1.allo.housework.repository.houseworkmember.HouseWorkMemberRepository
 import team1.allo.housework.repository.houseworktag.HouseWorkTagRepository;
 import team1.allo.housework.service.dto.HouseWorkListByDateResponse;
 import team1.allo.housework.service.dto.HouseWorkListRecentResponse;
+import team1.allo.housework.service.dto.HouseWorkMyCompleteStateResponse;
 import team1.allo.housework.service.dto.HouseWorkMyContributionResponse;
 import team1.allo.housework.service.dto.HouseWorkRecentResponse;
 import team1.allo.housework.service.dto.HouseWorkResponse;
@@ -269,5 +270,15 @@ public class HouseWorkService {
 			contribution = (int)Math.round((completedByMember * 100.0) / completedByGroup);
 		}
 		return new HouseWorkMyContributionResponse(contribution);
+	}
+
+	public HouseWorkMyCompleteStateResponse getHouseWorkCompleteState(Long memberId, LocalDate currentDate) {
+		// 내가 해야할 오늘의 집안일
+		int totalByMember = houseWorkRepository.countHouseWorkByMember(memberId, currentDate).intValue();
+
+		// 내가 완수한 오늘의 집안일
+		int completedByMember = houseWorkRepository.countCompletedHouseWorkByMember(memberId, currentDate).intValue();
+
+		return new HouseWorkMyCompleteStateResponse(completedByMember, totalByMember - completedByMember);
 	}
 }

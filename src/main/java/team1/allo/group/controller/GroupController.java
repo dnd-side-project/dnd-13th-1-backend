@@ -27,6 +27,7 @@ import team1.allo.group.service.dto.TagResponse;
 import team1.allo.housework.service.HouseWorkService;
 import team1.allo.housework.service.dto.HouseWorkListByDateResponse;
 import team1.allo.housework.service.dto.HouseWorkListRecentResponse;
+import team1.allo.housework.service.dto.HouseWorkMyCompleteStateResponse;
 import team1.allo.housework.service.dto.HouseWorkMyContributionResponse;
 import team1.allo.housework.service.dto.HouseWorkSaveRequest;
 import team1.allo.housework.service.dto.HouseWorkStatusByPeriodResponse;
@@ -118,5 +119,10 @@ public class GroupController {
 		@PathVariable Long groupId
 	) {
 		return houseWorkService.getContribution(groupId, member.getId(), LocalDate.now());
+	}
+
+	@GetMapping("/house-work/me/today")
+	public HouseWorkMyCompleteStateResponse getMyTask(@Auth Member member) {
+		return houseWorkService.getHouseWorkCompleteState(member.getId(), LocalDate.now());
 	}
 }
