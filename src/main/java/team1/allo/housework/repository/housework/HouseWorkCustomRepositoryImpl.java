@@ -42,4 +42,27 @@ public class HouseWorkCustomRepositoryImpl implements HouseWorkCustomRepository 
 			.orderBy(houseWork.completedDate.desc())
 			.fetch();
 	}
+
+	@Override
+	public Long countCompletedHouseWorkByGroup(Long groupId, LocalDate currentDate) {
+		return queryFactory.select(houseWork.count())
+			.from(houseWork)
+			.where(
+				houseWork.group.id.eq(groupId),
+				houseWork.completedDate.eq(currentDate)
+			)
+			.fetchOne();
+	}
+
+	@Override
+	public Long countCompletedHouseWorkByMember(Long memberId, LocalDate currentDate) {
+		return queryFactory.select(houseWork.count())
+			.from(houseWork)
+			.leftJoin(houseWorkMember).on(houseWork.id.eq(houseWorkMember.houseWork.id))
+			.where(
+				houseWorkMember.memberId.eq(memberId),
+				houseWork.completedDate.eq(currentDate)
+			)
+			.fetchOne();
+	}
 }

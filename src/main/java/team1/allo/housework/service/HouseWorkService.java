@@ -28,6 +28,7 @@ import team1.allo.housework.repository.houseworkmember.HouseWorkMemberRepository
 import team1.allo.housework.repository.houseworktag.HouseWorkTagRepository;
 import team1.allo.housework.service.dto.HouseWorkListByDateResponse;
 import team1.allo.housework.service.dto.HouseWorkListRecentResponse;
+import team1.allo.housework.service.dto.HouseWorkMyContributionResponse;
 import team1.allo.housework.service.dto.HouseWorkRecentResponse;
 import team1.allo.housework.service.dto.HouseWorkResponse;
 import team1.allo.housework.service.dto.HouseWorkSaveRequest;
@@ -253,5 +254,20 @@ public class HouseWorkService {
 	public HouseWork findById(Long houseWorkId) {
 		return houseWorkRepository.findById(houseWorkId)
 			.orElseThrow(() -> new NoSuchElementException("HouseWork does not exist"));
+	}
+
+	public HouseWorkMyContributionResponse getContribution(Long groupId, Long memberId, LocalDate currentDate) {
+		// 해당 그룹이 오늘 완수한 집안일
+		Long completedByGroup = houseWorkRepository.countCompletedHouseWorkByGroup(groupId, currentDate);
+
+		// 해당 그룹에서 내가 오늘 완수한 집안일
+		Long completedByMember = houseWorkRepository.countCompletedHouseWorkByMember(memberId, currentDate);
+
+		// 기여도 계산
+		int contribution = 0;
+		if (completedByGroup != null && completedByMember > 0) {
+			contribution = (int)Math.round((completedByMember * 100.0) / completedByGroup);
+		}
+		return new HouseWorkMyContributionResponse(contribution);
 	}
 }
