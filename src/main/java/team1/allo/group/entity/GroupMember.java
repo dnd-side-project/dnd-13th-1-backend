@@ -21,7 +21,7 @@ public class GroupMember {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "group_id")
+	@JoinColumn(name = "house_work_group_id")
 	private Group group;
 
 	private Long memberId;
