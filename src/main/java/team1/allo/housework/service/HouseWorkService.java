@@ -2,9 +2,12 @@ package team1.allo.housework.service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.format.TextStyle;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -34,6 +37,7 @@ import team1.allo.housework.service.dto.HouseWorkRecentResponse;
 import team1.allo.housework.service.dto.HouseWorkResponse;
 import team1.allo.housework.service.dto.HouseWorkSaveRequest;
 import team1.allo.housework.service.dto.HouseWorkStatusByPeriodResponse;
+import team1.allo.housework.service.dto.HouseWorkWeeklyResponse;
 import team1.allo.housework.service.dto.TagForHouseWorkListResponse;
 import team1.allo.member.entity.Member;
 import team1.allo.member.service.MemberService;
@@ -280,5 +284,39 @@ public class HouseWorkService {
 		int completedByMember = houseWorkRepository.countCompletedHouseWorkByMember(memberId, currentDate).intValue();
 
 		return new HouseWorkMyCompleteStateResponse(completedByMember, totalByMember - completedByMember);
+	}
+
+	public HouseWorkWeeklyResponse getLastHouseWorkCompletedState(Long memberId, LocalDate currentDate) {
+		LocalDate lastMonday = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).minusWeeks(1);
+		LocalDate lastSunday = lastMonday.plusDays(6);
+
+		// 지난주 나의 집안일 전체 수
+		int lastTotalCount = houseWorkRepository.countHouseWorkByMember(memberId, lastMonday, lastSunday).intValue();
+
+		// 지난주 완수한 요일별 나의 집안일
+		Map<String, Long> weeklyCompleted = houseWorkRepository.getWeeklyCompletedHouseWorkCountByMember(
+				memberId,
+				lastMonday,
+				lastSunday
+			).entrySet()
+			.stream()
+			.collect(Collectors.toMap(
+				entry -> getDayName(entry.getKey().getDayOfWeek()),
+				entry -> entry.getValue(),
+				(existing, replacement) -> existing,
+				LinkedHashMap::new
+			));
+
+		// 지난주 완수한 나의 집안일 수
+		int lastCompletedCount = weeklyCompleted.values()
+			.stream()
+			.mapToInt(Long::intValue)
+			.sum();
+
+		return new HouseWorkWeeklyResponse(lastCompletedCount, lastTotalCount, weeklyCompleted);
+	}
+
+	private String getDayName(DayOfWeek dayOfWeek) {
+		return dayOfWeek.getDisplayName(TextStyle.FULL, Locale.ENGLISH).toLowerCase();
 	}
 }
