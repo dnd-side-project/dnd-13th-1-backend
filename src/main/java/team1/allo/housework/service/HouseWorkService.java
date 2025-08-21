@@ -37,6 +37,7 @@ import team1.allo.housework.service.dto.HouseWorkRecentResponse;
 import team1.allo.housework.service.dto.HouseWorkResponse;
 import team1.allo.housework.service.dto.HouseWorkSaveRequest;
 import team1.allo.housework.service.dto.HouseWorkStatusByPeriodResponse;
+import team1.allo.housework.service.dto.HouseWorkWeeklyComparisonResponse;
 import team1.allo.housework.service.dto.HouseWorkWeeklyResponse;
 import team1.allo.housework.service.dto.TagForHouseWorkListResponse;
 import team1.allo.member.entity.Member;
@@ -287,8 +288,8 @@ public class HouseWorkService {
 	}
 
 	public HouseWorkWeeklyResponse getLastHouseWorkCompletedState(Long memberId, LocalDate currentDate) {
-		LocalDate lastMonday = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).minusWeeks(1);
-		LocalDate lastSunday = lastMonday.plusDays(6);
+		LocalDate lastMonday = getMondayOfWeeksAgo(currentDate, 1);
+		LocalDate lastSunday = getSundayOfWeeksAgo(currentDate, 1);
 
 		// 지난주 나의 집안일 전체 수
 		int lastTotalCount = houseWorkRepository.countHouseWorkByMember(memberId, lastMonday, lastSunday).intValue();
@@ -316,7 +317,33 @@ public class HouseWorkService {
 		return new HouseWorkWeeklyResponse(lastCompletedCount, lastTotalCount, weeklyCompleted);
 	}
 
+	public HouseWorkWeeklyComparisonResponse getWeeklyHouseWorkCompletedComparison(Long memberId,
+		LocalDate currentDate) {
+		LocalDate twoWeeksAgoMonday = getMondayOfWeeksAgo(currentDate, 2);
+		LocalDate twoWeeksAgoSunday = getSundayOfWeeksAgo(currentDate, 2);
+
+		LocalDate lastMonday = getMondayOfWeeksAgo(currentDate, 1);
+		LocalDate lastSunday = getSundayOfWeeksAgo(currentDate, 1);
+
+		return new HouseWorkWeeklyComparisonResponse(
+			houseWorkRepository.countCompletedHouseWorkByMember(memberId, twoWeeksAgoMonday, twoWeeksAgoSunday)
+				.intValue(),
+			houseWorkRepository.countCompletedHouseWorkByMember(memberId, lastMonday, lastSunday).intValue()
+		);
+	}
+
 	private String getDayName(DayOfWeek dayOfWeek) {
 		return dayOfWeek.getDisplayName(TextStyle.FULL, Locale.ENGLISH).toLowerCase();
+	}
+
+	private LocalDate getMondayOfWeeksAgo(LocalDate currentDate, int weeksAgo) {
+		return currentDate
+			.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+			.minusWeeks(weeksAgo);
+	}
+
+	private LocalDate getSundayOfWeeksAgo(LocalDate currentDate, int weeksAgo) {
+		LocalDate monday = getMondayOfWeeksAgo(currentDate, weeksAgo);
+		return monday.plusDays(6);
 	}
 }
