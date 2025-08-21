@@ -25,6 +25,7 @@ import team1.allo.group.service.dto.MyGroupResponse;
 import team1.allo.group.service.dto.PlaceResponse;
 import team1.allo.group.service.dto.TagResponse;
 import team1.allo.housework.service.HouseWorkService;
+import team1.allo.housework.service.dto.HouseWorkActivitySummaryResponse;
 import team1.allo.housework.service.dto.HouseWorkListByDateResponse;
 import team1.allo.housework.service.dto.HouseWorkListRecentResponse;
 import team1.allo.housework.service.dto.HouseWorkMyCompleteStateResponse;
@@ -136,5 +137,10 @@ public class GroupController {
 	@GetMapping("/house-work/me/comparison")
 	public HouseWorkWeeklyComparisonResponse getWeeklyHouseWorkCompletedComparison(@Auth Member member) {
 		return houseWorkService.getWeeklyHouseWorkCompletedComparison(member.getId(), LocalDate.now());
+	}
+
+	@GetMapping("/house-work/me/activity-summary")
+	public HouseWorkActivitySummaryResponse getHouseWorkActivitySummary(@Auth Member member) {
+		return houseWorkService.getHouseWorkActivitySummary(member.getId());
 	}
 }

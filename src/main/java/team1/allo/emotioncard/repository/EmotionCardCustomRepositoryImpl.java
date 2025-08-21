@@ -45,6 +45,22 @@ public class EmotionCardCustomRepositoryImpl implements EmotionCardCustomReposit
 			.fetch();
 	}
 
+	@Override
+	public Long countEmotionCardSentByMember(Long memberId) {
+		return queryFactory.select(emotionCard.count())
+			.from(emotionCard)
+			.where(emotionCard.senderId.eq(memberId))
+			.fetchOne();
+	}
+
+	@Override
+	public Long countEmotionCardReceivedByMember(Long memberId) {
+		return queryFactory.select(emotionCard.count())
+			.from(emotionCard)
+			.where(emotionCard.receiverId.eq(memberId))
+			.fetchOne();
+	}
+
 	private BooleanExpression buildMemberFilter(Long memberId, String filter) {
 		return switch (filter) {
 			case "from" -> emotionCard.receiverId.eq(memberId);

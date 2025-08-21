@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import team1.allo.emotioncard.repository.EmotionCardRepository;
 import team1.allo.group.entity.Group;
 import team1.allo.group.entity.Place;
 import team1.allo.group.entity.Tag;
@@ -29,6 +30,7 @@ import team1.allo.housework.entity.HouseWorkTag;
 import team1.allo.housework.repository.housework.HouseWorkRepository;
 import team1.allo.housework.repository.houseworkmember.HouseWorkMemberRepository;
 import team1.allo.housework.repository.houseworktag.HouseWorkTagRepository;
+import team1.allo.housework.service.dto.HouseWorkActivitySummaryResponse;
 import team1.allo.housework.service.dto.HouseWorkListByDateResponse;
 import team1.allo.housework.service.dto.HouseWorkListRecentResponse;
 import team1.allo.housework.service.dto.HouseWorkMyCompleteStateResponse;
@@ -51,6 +53,7 @@ public class HouseWorkService {
 	private final HouseWorkRepository houseWorkRepository;
 	private final HouseWorkTagRepository houseWorkTagRepository;
 	private final HouseWorkMemberRepository houseWorkMemberRepository;
+	private final EmotionCardRepository emotionCardRepository;
 
 	private final MemberService memberService;
 	private final GroupService groupService;
@@ -331,6 +334,19 @@ public class HouseWorkService {
 			houseWorkRepository.countCompletedHouseWorkByMember(memberId, lastMonday, lastSunday).intValue()
 		);
 	}
+
+	public HouseWorkActivitySummaryResponse getHouseWorkActivitySummary(Long memberId) {
+		Long receivedEmotionCardCount = emotionCardRepository.countEmotionCardReceivedByMember(memberId);
+		Long sentEmotionCardCount = emotionCardRepository.countEmotionCardSentByMember(memberId);
+		Long completedHouseWorkCount = houseWorkRepository.countCompletedHouseWorkByMember(memberId);
+		return new HouseWorkActivitySummaryResponse(
+			receivedEmotionCardCount,
+			sentEmotionCardCount,
+			completedHouseWorkCount
+		);
+	}
+
+	// ===== Private Methods =====
 
 	private String getDayName(DayOfWeek dayOfWeek) {
 		return dayOfWeek.getDisplayName(TextStyle.FULL, Locale.ENGLISH).toLowerCase();
