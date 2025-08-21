@@ -23,7 +23,9 @@ import team1.allo.group.service.dto.GroupResponse;
 import team1.allo.group.service.dto.MemberResponse;
 import team1.allo.group.service.dto.MyGroupResponse;
 import team1.allo.group.service.dto.PlaceResponse;
+import team1.allo.group.service.dto.PlaceSaveRequest;
 import team1.allo.group.service.dto.TagResponse;
+import team1.allo.group.service.dto.TagSaveRequest;
 import team1.allo.group.service.generator.InviteCodeGenerator;
 import team1.allo.member.entity.Member;
 import team1.allo.member.service.MemberService;
@@ -129,7 +131,7 @@ public class GroupService {
 			.orElseThrow(() -> new NoSuchElementException("Group Member does not exist"));
 		return new MyGroupResponse(groupMember.getGroup().getId());
 	}
-	
+
 	public Group findGroupById(Long groupId) {
 		return groupRepository.findById(groupId)
 			.orElseThrow(() -> new NoSuchElementException("Group does not exist"));
@@ -147,5 +149,22 @@ public class GroupService {
 
 	public List<Tag> findAllByTagId(List<Long> tagIds) {
 		return tagRepository.findAllById(tagIds);
+	}
+
+	@Transactional
+	public TagResponse saveTag(Long groupId, TagSaveRequest request) {
+		Group group = groupRepository.findById(groupId)
+			.orElseThrow(() -> new NoSuchElementException("group not found"));
+		Tag tag = new Tag(request.tagName(), group);
+		Tag saved = tagRepository.save(tag);
+		return new TagResponse(saved.getId(), saved.getName());
+	}
+
+	@Transactional
+	public void savePlace(Long groupId, PlaceSaveRequest request) {
+		Group group = groupRepository.findById(groupId)
+			.orElseThrow(() -> new NoSuchElementException("group not found"));
+		Place place = new Place(request.name(), group);
+		placeRepository.save(place);
 	}
 }

@@ -23,10 +23,13 @@ import team1.allo.group.service.dto.GroupResponse;
 import team1.allo.group.service.dto.MemberResponse;
 import team1.allo.group.service.dto.MyGroupResponse;
 import team1.allo.group.service.dto.PlaceResponse;
+import team1.allo.group.service.dto.PlaceSaveRequest;
 import team1.allo.group.service.dto.TagResponse;
+import team1.allo.group.service.dto.TagSaveRequest;
 import team1.allo.housework.service.HouseWorkService;
 import team1.allo.housework.service.dto.HouseWorkListByDateResponse;
 import team1.allo.housework.service.dto.HouseWorkListRecentResponse;
+import team1.allo.housework.service.dto.HouseWorkResponse;
 import team1.allo.housework.service.dto.HouseWorkSaveRequest;
 import team1.allo.housework.service.dto.HouseWorkStatusByPeriodResponse;
 import team1.allo.member.entity.Member;
@@ -115,4 +118,15 @@ public class GroupController {
 	) {
 		return houseWorkService.getHouseWorksRecent(groupId, receiverId, LocalDate.now());
 	}
+
+	@PostMapping("/{groupId}/tags")
+	public TagResponse saveTag(@PathVariable Long groupId, @RequestBody TagSaveRequest request) {
+		return groupService.saveTag(groupId, request);
+	}
+
+	@PostMapping("/{groupId}/places")
+	public void savePlace(@PathVariable Long groupId, @RequestBody PlaceSaveRequest request) {
+		groupService.savePlace(groupId, request);
+	}
+
 }

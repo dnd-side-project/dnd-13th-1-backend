@@ -263,7 +263,7 @@ public class HouseWorkService {
 		List<HouseWorkMember> houseWorkMembers = houseWorkMemberRepository.findByHouseWorkId(houseWork.getId());
 		List<Member> members = memberService.findAllById(
 			houseWorkMembers.stream()
-				.map(it -> it.getMemberId())
+				.map(HouseWorkMember::getMemberId)
 				.toList()
 		);
 
