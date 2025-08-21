@@ -12,7 +12,7 @@ public interface HouseWorkCustomRepository {
 
 	List<HouseWork> findHouseWorkRecent(Long groupId, Long receiverId, LocalDate currentDate);
 
-	Long countCompletedHouseWorkByGroup(Long memberId, LocalDate currentDate);
+	Long countCompletedHouseWorkByGroup(Long groupId, LocalDate currentDate);
 
 	Long countCompletedHouseWorkByMember(Long memberId, LocalDate currentDate);
 

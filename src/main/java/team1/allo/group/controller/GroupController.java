@@ -123,7 +123,7 @@ public class GroupController {
 	}
 
 	@GetMapping("/house-work/me/today")
-	public HouseWorkMyCompleteStateResponse getMyTask(@Auth Member member) {
+	public HouseWorkMyCompleteStateResponse getHouseWorkCompleteState(@Auth Member member) {
 		return houseWorkService.getHouseWorkCompleteState(member.getId(), LocalDate.now());
 	}
 
