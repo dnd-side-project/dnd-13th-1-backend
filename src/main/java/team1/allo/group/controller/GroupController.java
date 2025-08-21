@@ -75,6 +75,11 @@ public class GroupController {
 		houseWorkService.saveHouseWork(groupId, request);
 	}
 
+	@GetMapping("/{groupId}/house-work/{houseWorkId}")
+	public HouseWorkResponse getHouseWork(@PathVariable Long groupId, @PathVariable Long houseWorkId) {
+		return houseWorkService.getHouseWork(groupId, houseWorkId);
+	}
+
 	@GetMapping("/{groupId}/my-house-work/period")
 	public List<HouseWorkStatusByPeriodResponse> getHouseWorkStatusByPeriod(
 		@PathVariable Long groupId,
