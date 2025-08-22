@@ -1,11 +1,11 @@
-INSERT INTO groups (character_id, invite_code)
+INSERT INTO house_work_group (character_id, invite_code)
 VALUES (1, 'INVITE123'),
        (2, 'INVITE456'),
        (3, 'INVITE789'),
        (4, 'INVITE101'),
        (5, 'INVITE112');
 
-INSERT INTO character (name, image_url)
+INSERT INTO house_work_character (name, image_url)
 VALUES ('알로', 'https://fake.com/1.png'),
        ('깨끗이', 'https://fake.com/2.png'),
        ('코클린', 'https://fake.com/3.png'),
@@ -24,7 +24,7 @@ VALUES ('M001', '멤버1', 'https://fake.com/m1.png'),
        ('M009', '멤버9', 'https://fake.com/m9.png'),
        ('M010', '멤버10', 'https://fake.com/m10.png');
 
-INSERT INTO group_member (group_id, member_id)
+INSERT INTO group_member (house_work_group_id, member_id)
 VALUES (1, 1),
        (1, 2),
        (1, 3),
@@ -38,7 +38,7 @@ VALUES (1, 1),
        (4, 1),
        (4, 5);
 
-INSERT INTO place (name, group_id)
+INSERT INTO place (name, house_work_group_id)
 VALUES ('거실', 1),
        ('주방', 1),
        ('침실', 1),
@@ -49,7 +49,7 @@ VALUES ('거실', 1),
        ('화장실', 4),
        ('현관', 4);
 
-INSERT INTO tag (name, group_id)
+INSERT INTO tag (name, house_work_group_id)
 VALUES ('깨끗이', 1),
        ('빡빡', 1),
        ('쓱쓱', 2),
@@ -58,7 +58,7 @@ VALUES ('깨끗이', 1),
        ('크린토피아처럼', 3),
        ('매우열심히', 4);
 
-INSERT INTO house_work (name, place_id, group_id, task_date, notified, completed, completed_date)
+INSERT INTO house_work (name, place_id, house_work_group_id, task_date, notified, completed, completed_date)
 VALUES ('세탁기 돌리기', 4, 1, '2025-08-10', false, true, '2025-08-10'),
        ('바닥 청소', 1, 1, '2025-08-10', false, true, '2025-08-10'),
        ('쓰레기 버리기', 2, 1, '2025-08-10', true, false, null),
