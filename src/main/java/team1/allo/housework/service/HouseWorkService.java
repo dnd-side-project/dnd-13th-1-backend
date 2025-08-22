@@ -169,6 +169,15 @@ public class HouseWorkService {
 						member.getProfileImageUrl()
 					);
 				})
+				.sorted((m1, m2) -> {
+					if (m1.memberId().equals(memberId)) {
+						return -1;
+					}
+					if (m2.memberId().equals(memberId)) {
+						return 1;
+					}
+					return 0;
+				})
 				.toList();
 
 			List<TagForHouseWorkListResponse> tagResponses = houseWorkTagMap.getOrDefault(houseWorkId, List.of())
