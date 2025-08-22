@@ -2,9 +2,12 @@ package team1.allo.housework.service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.format.TextStyle;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -13,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import team1.allo.emotioncard.repository.EmotionCardRepository;
 import team1.allo.group.entity.Group;
 import team1.allo.group.entity.Place;
 import team1.allo.group.entity.Tag;
@@ -26,13 +30,19 @@ import team1.allo.housework.entity.HouseWorkTag;
 import team1.allo.housework.repository.housework.HouseWorkRepository;
 import team1.allo.housework.repository.houseworkmember.HouseWorkMemberRepository;
 import team1.allo.housework.repository.houseworktag.HouseWorkTagRepository;
+import team1.allo.housework.service.dto.HouseWorkActivitySummaryResponse;
 import team1.allo.housework.service.dto.HouseWorkListByDateResponse;
 import team1.allo.housework.service.dto.HouseWorkListRecentResponse;
+import team1.allo.housework.service.dto.HouseWorkMyCompleteStateResponse;
+import team1.allo.housework.service.dto.HouseWorkMyContributionResponse;
 import team1.allo.housework.service.dto.HouseWorkRecentResponse;
 import team1.allo.housework.service.dto.HouseWorkResponse;
 import team1.allo.housework.service.dto.HouseWorkSaveRequest;
 import team1.allo.housework.service.dto.HouseWorkStatusByPeriodResponse;
+import team1.allo.housework.service.dto.HouseWorkWeeklyComparisonResponse;
+import team1.allo.housework.service.dto.HouseWorkWeeklyResponse;
 import team1.allo.housework.service.dto.TagForHouseWorkListResponse;
+import team1.allo.housework.service.dto.WeeklyHouseWorkCountDto;
 import team1.allo.member.entity.Member;
 import team1.allo.member.service.MemberService;
 
@@ -44,6 +54,7 @@ public class HouseWorkService {
 	private final HouseWorkRepository houseWorkRepository;
 	private final HouseWorkTagRepository houseWorkTagRepository;
 	private final HouseWorkMemberRepository houseWorkMemberRepository;
+	private final EmotionCardRepository emotionCardRepository;
 
 	private final MemberService memberService;
 	private final GroupService groupService;
@@ -255,6 +266,117 @@ public class HouseWorkService {
 			.orElseThrow(() -> new NoSuchElementException("HouseWork does not exist"));
 	}
 
+	public HouseWorkMyContributionResponse getContribution(Long groupId, Long memberId, LocalDate currentDate) {
+		// 해당 그룹이 오늘 완수한 집안일
+		Long completedByGroup = houseWorkRepository.countCompletedHouseWorkByGroup(groupId, currentDate);
+
+		// 해당 그룹에서 내가 오늘 완수한 집안일
+		Long completedByMember = houseWorkRepository.countCompletedHouseWorkByMember(memberId, currentDate);
+
+		// 기여도 계산
+		int contribution = 0;
+		if (completedByGroup != null && completedByMember > 0) {
+			contribution = (int)Math.round((completedByMember * 100.0) / completedByGroup);
+		}
+		return new HouseWorkMyContributionResponse(contribution);
+	}
+
+	public HouseWorkMyCompleteStateResponse getHouseWorkCompleteState(Long memberId, LocalDate currentDate) {
+		// 내가 해야할 오늘의 집안일
+		int totalByMember = houseWorkRepository.countHouseWorkByMember(memberId, currentDate).intValue();
+
+		// 내가 완수한 오늘의 집안일
+		int completedByMember = houseWorkRepository.countCompletedHouseWorkByMember(memberId, currentDate).intValue();
+
+		return new HouseWorkMyCompleteStateResponse(completedByMember, totalByMember - completedByMember);
+	}
+
+	public HouseWorkWeeklyResponse getLastHouseWorkCompletedState(Long memberId, LocalDate currentDate) {
+		LocalDate lastMonday = getMondayOfWeeksAgo(currentDate, 1);
+		LocalDate lastSunday = getSundayOfWeeksAgo(currentDate, 1);
+
+		// 지난주 나의 집안일 전체 수
+		int lastTotalCount = houseWorkRepository.countHouseWorkByMember(memberId, lastMonday, lastSunday).intValue();
+
+		// 지난주 완수한 요일별 나의 집안일
+		List<WeeklyHouseWorkCountDto> results = houseWorkRepository.getWeeklyCompletedHouseWorkCountByMember(
+			memberId,
+			lastMonday,
+			lastSunday
+		);
+
+		Map<LocalDate, Long> weeklyCompletedByDate = new LinkedHashMap<>();
+		for (int i = 0; i < 7; i++) {
+			weeklyCompletedByDate.put(lastMonday.plusDays(i), 0L);
+		}
+
+		for (WeeklyHouseWorkCountDto result : results) {
+			weeklyCompletedByDate.put(
+				result.completedDate(),
+				result.count()
+			);
+		}
+
+		Map<String, Long> weeklyCompleted = weeklyCompletedByDate.entrySet()
+			.stream()
+			.collect(Collectors.toMap(
+				entry -> getDayName(entry.getKey().getDayOfWeek()),
+				entry -> entry.getValue(),
+				(existing, replacement) -> existing,
+				LinkedHashMap::new
+			));
+
+		// 지난주 완수한 나의 집안일 수
+		int lastCompletedCount = weeklyCompleted.values()
+			.stream()
+			.mapToInt(Long::intValue)
+			.sum();
+
+		return new HouseWorkWeeklyResponse(lastCompletedCount, lastTotalCount, weeklyCompleted);
+	}
+
+	public HouseWorkWeeklyComparisonResponse getWeeklyHouseWorkCompletedComparison(Long memberId,
+		LocalDate currentDate) {
+		LocalDate twoWeeksAgoMonday = getMondayOfWeeksAgo(currentDate, 2);
+		LocalDate twoWeeksAgoSunday = getSundayOfWeeksAgo(currentDate, 2);
+
+		LocalDate lastMonday = getMondayOfWeeksAgo(currentDate, 1);
+		LocalDate lastSunday = getSundayOfWeeksAgo(currentDate, 1);
+
+		return new HouseWorkWeeklyComparisonResponse(
+			houseWorkRepository.countCompletedHouseWorkByMember(memberId, twoWeeksAgoMonday, twoWeeksAgoSunday)
+				.intValue(),
+			houseWorkRepository.countCompletedHouseWorkByMember(memberId, lastMonday, lastSunday).intValue()
+		);
+	}
+
+	public HouseWorkActivitySummaryResponse getHouseWorkActivitySummary(Long memberId) {
+		Long receivedEmotionCardCount = emotionCardRepository.countEmotionCardReceivedByMember(memberId);
+		Long sentEmotionCardCount = emotionCardRepository.countEmotionCardSentByMember(memberId);
+		Long completedHouseWorkCount = houseWorkRepository.countCompletedHouseWorkByMember(memberId);
+		return new HouseWorkActivitySummaryResponse(
+			receivedEmotionCardCount,
+			sentEmotionCardCount,
+			completedHouseWorkCount
+		);
+	}
+
+	// ===== Private Methods =====
+
+	private String getDayName(DayOfWeek dayOfWeek) {
+		return dayOfWeek.getDisplayName(TextStyle.FULL, Locale.ENGLISH).toLowerCase();
+	}
+
+	private LocalDate getMondayOfWeeksAgo(LocalDate currentDate, int weeksAgo) {
+		return currentDate
+			.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+			.minusWeeks(weeksAgo);
+	}
+
+	private LocalDate getSundayOfWeeksAgo(LocalDate currentDate, int weeksAgo) {
+		LocalDate monday = getMondayOfWeeksAgo(currentDate, weeksAgo);
+		return monday.plusDays(6);
+	}
 	public HouseWorkResponse getHouseWork(Long groupId, Long houseWorkId) {
 		HouseWork houseWork = houseWorkRepository.findById(houseWorkId)
 			.orElseThrow(() -> new NoSuchElementException("HouseWork does not exist"));

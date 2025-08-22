@@ -27,11 +27,16 @@ import team1.allo.group.service.dto.PlaceSaveRequest;
 import team1.allo.group.service.dto.TagResponse;
 import team1.allo.group.service.dto.TagSaveRequest;
 import team1.allo.housework.service.HouseWorkService;
+import team1.allo.housework.service.dto.HouseWorkActivitySummaryResponse;
 import team1.allo.housework.service.dto.HouseWorkListByDateResponse;
 import team1.allo.housework.service.dto.HouseWorkListRecentResponse;
+import team1.allo.housework.service.dto.HouseWorkMyCompleteStateResponse;
+import team1.allo.housework.service.dto.HouseWorkMyContributionResponse;
 import team1.allo.housework.service.dto.HouseWorkResponse;
 import team1.allo.housework.service.dto.HouseWorkSaveRequest;
 import team1.allo.housework.service.dto.HouseWorkStatusByPeriodResponse;
+import team1.allo.housework.service.dto.HouseWorkWeeklyComparisonResponse;
+import team1.allo.housework.service.dto.HouseWorkWeeklyResponse;
 import team1.allo.member.entity.Member;
 
 @RestController
@@ -119,6 +124,34 @@ public class GroupController {
 		return houseWorkService.getHouseWorksRecent(groupId, receiverId, LocalDate.now());
 	}
 
+	@GetMapping("/{groupId}/house-work/me/contribution")
+	public HouseWorkMyContributionResponse getMyContribution(
+		@Auth Member member,
+		@PathVariable Long groupId
+	) {
+		return houseWorkService.getContribution(groupId, member.getId(), LocalDate.now());
+	}
+
+	@GetMapping("/house-work/me/today")
+	public HouseWorkMyCompleteStateResponse getHouseWorkCompleteState(@Auth Member member) {
+		return houseWorkService.getHouseWorkCompleteState(member.getId(), LocalDate.now());
+	}
+
+	@GetMapping("/house-work/me/week")
+	public HouseWorkWeeklyResponse getLastHouseWorkCompletedState(@Auth Member member) {
+		return houseWorkService.getLastHouseWorkCompletedState(member.getId(), LocalDate.now());
+	}
+
+	@GetMapping("/house-work/me/comparison")
+	public HouseWorkWeeklyComparisonResponse getWeeklyHouseWorkCompletedComparison(@Auth Member member) {
+		return houseWorkService.getWeeklyHouseWorkCompletedComparison(member.getId(), LocalDate.now());
+	}
+
+	@GetMapping("/house-work/me/activity-summary")
+	public HouseWorkActivitySummaryResponse getHouseWorkActivitySummary(@Auth Member member) {
+		return houseWorkService.getHouseWorkActivitySummary(member.getId());
+	}
+
 	@PostMapping("/{groupId}/tags")
 	public TagResponse saveTag(@PathVariable Long groupId, @RequestBody TagSaveRequest request) {
 		return groupService.saveTag(groupId, request);
@@ -128,5 +161,4 @@ public class GroupController {
 	public void savePlace(@PathVariable Long groupId, @RequestBody PlaceSaveRequest request) {
 		groupService.savePlace(groupId, request);
 	}
-
 }
