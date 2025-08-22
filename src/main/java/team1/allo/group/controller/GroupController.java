@@ -28,6 +28,7 @@ import team1.allo.group.service.dto.TagResponse;
 import team1.allo.group.service.dto.TagSaveRequest;
 import team1.allo.housework.service.HouseWorkService;
 import team1.allo.housework.service.dto.HouseWorkActivitySummaryResponse;
+import team1.allo.housework.service.dto.HouseWorkCleanliness;
 import team1.allo.housework.service.dto.HouseWorkListByDateResponse;
 import team1.allo.housework.service.dto.HouseWorkListRecentResponse;
 import team1.allo.housework.service.dto.HouseWorkMyCompleteStateResponse;
@@ -160,5 +161,10 @@ public class GroupController {
 	@PostMapping("/{groupId}/places")
 	public void savePlace(@PathVariable Long groupId, @RequestBody PlaceSaveRequest request) {
 		groupService.savePlace(groupId, request);
+	}
+
+	@GetMapping("/{groupId}/cleanliness")
+	public HouseWorkCleanliness getCleanliness(@PathVariable Long groupId) {
+		return houseWorkService.getCleanliness(groupId, LocalDate.now());
 	}
 }

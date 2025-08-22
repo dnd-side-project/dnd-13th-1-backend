@@ -31,6 +31,7 @@ import team1.allo.housework.repository.housework.HouseWorkRepository;
 import team1.allo.housework.repository.houseworkmember.HouseWorkMemberRepository;
 import team1.allo.housework.repository.houseworktag.HouseWorkTagRepository;
 import team1.allo.housework.service.dto.HouseWorkActivitySummaryResponse;
+import team1.allo.housework.service.dto.HouseWorkCleanliness;
 import team1.allo.housework.service.dto.HouseWorkListByDateResponse;
 import team1.allo.housework.service.dto.HouseWorkListRecentResponse;
 import team1.allo.housework.service.dto.HouseWorkMyCompleteStateResponse;
@@ -361,6 +362,20 @@ public class HouseWorkService {
 		);
 	}
 
+	public HouseWorkCleanliness getCleanliness(Long groupId, LocalDate currentDate) {
+		// 오늘 기준 우리집 집안일 수
+		long total = houseWorkRepository.countHouseWorkByGroupIdAndTaskDate(groupId, currentDate);
+
+		// 오늘 기준 우리집 완료된 집안일 수
+		long completed = houseWorkRepository.countHouseWorkByGroupIdAndCompletedDate(groupId, currentDate);
+
+		int cleanliness = 0;
+		if (completed > 0) {
+			cleanliness = (int)Math.round((completed * 100.0) / total);
+		}
+		return new HouseWorkCleanliness(cleanliness);
+	}
+
 	// ===== Private Methods =====
 
 	private String getDayName(DayOfWeek dayOfWeek) {
@@ -377,6 +392,7 @@ public class HouseWorkService {
 		LocalDate monday = getMondayOfWeeksAgo(currentDate, weeksAgo);
 		return monday.plusDays(6);
 	}
+
 	public HouseWorkResponse getHouseWork(Long groupId, Long houseWorkId) {
 		HouseWork houseWork = houseWorkRepository.findById(houseWorkId)
 			.orElseThrow(() -> new NoSuchElementException("HouseWork does not exist"));
