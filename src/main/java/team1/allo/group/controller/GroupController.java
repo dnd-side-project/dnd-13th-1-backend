@@ -23,13 +23,16 @@ import team1.allo.group.service.dto.GroupResponse;
 import team1.allo.group.service.dto.MemberResponse;
 import team1.allo.group.service.dto.MyGroupResponse;
 import team1.allo.group.service.dto.PlaceResponse;
+import team1.allo.group.service.dto.PlaceSaveRequest;
 import team1.allo.group.service.dto.TagResponse;
+import team1.allo.group.service.dto.TagSaveRequest;
 import team1.allo.housework.service.HouseWorkService;
 import team1.allo.housework.service.dto.HouseWorkActivitySummaryResponse;
 import team1.allo.housework.service.dto.HouseWorkListByDateResponse;
 import team1.allo.housework.service.dto.HouseWorkListRecentResponse;
 import team1.allo.housework.service.dto.HouseWorkMyCompleteStateResponse;
 import team1.allo.housework.service.dto.HouseWorkMyContributionResponse;
+import team1.allo.housework.service.dto.HouseWorkResponse;
 import team1.allo.housework.service.dto.HouseWorkSaveRequest;
 import team1.allo.housework.service.dto.HouseWorkStatusByPeriodResponse;
 import team1.allo.housework.service.dto.HouseWorkWeeklyComparisonResponse;
@@ -78,6 +81,11 @@ public class GroupController {
 	@PostMapping("/{groupId}/house-work")
 	public void saveHouseWork(@PathVariable Long groupId, @RequestBody HouseWorkSaveRequest request) {
 		houseWorkService.saveHouseWork(groupId, request);
+	}
+
+	@GetMapping("/{groupId}/house-work/{houseWorkId}")
+	public HouseWorkResponse getHouseWork(@PathVariable Long groupId, @PathVariable Long houseWorkId) {
+		return houseWorkService.getHouseWork(groupId, houseWorkId);
 	}
 
 	@GetMapping("/{groupId}/my-house-work/period")
@@ -142,5 +150,15 @@ public class GroupController {
 	@GetMapping("/house-work/me/activity-summary")
 	public HouseWorkActivitySummaryResponse getHouseWorkActivitySummary(@Auth Member member) {
 		return houseWorkService.getHouseWorkActivitySummary(member.getId());
+	}
+
+	@PostMapping("/{groupId}/tags")
+	public TagResponse saveTag(@PathVariable Long groupId, @RequestBody TagSaveRequest request) {
+		return groupService.saveTag(groupId, request);
+	}
+
+	@PostMapping("/{groupId}/places")
+	public void savePlace(@PathVariable Long groupId, @RequestBody PlaceSaveRequest request) {
+		groupService.savePlace(groupId, request);
 	}
 }

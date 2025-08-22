@@ -22,7 +22,7 @@ public class Place {
 	private String name;
 
 	@ManyToOne
-	@JoinColumn(name = "group_id")
+	@JoinColumn(name = "house_work_group_id")
 	private Group group;
 
 	public Place(String name, Group group) {
