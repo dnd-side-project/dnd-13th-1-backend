@@ -4,15 +4,14 @@ import static team1.allo.housework.entity.QHouseWork.*;
 import static team1.allo.housework.entity.QHouseWorkMember.*;
 
 import java.time.LocalDate;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
-import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
 import team1.allo.housework.entity.HouseWork;
+import team1.allo.housework.service.dto.WeeklyHouseWorkCountDto;
 
 @RequiredArgsConstructor
 public class HouseWorkCustomRepositoryImpl implements HouseWorkCustomRepository {
@@ -118,12 +117,18 @@ public class HouseWorkCustomRepositoryImpl implements HouseWorkCustomRepository 
 	}
 
 	@Override
-	public Map<LocalDate, Long> getWeeklyCompletedHouseWorkCountByMember(
+	public List<WeeklyHouseWorkCountDto> getWeeklyCompletedHouseWorkCountByMember(
 		Long memberId,
 		LocalDate lastMonday,
 		LocalDate lastSunday
 	) {
-		List<Tuple> results = queryFactory.select(houseWork.completedDate, houseWork.count())
+		return queryFactory.select(
+				Projections.constructor(
+					WeeklyHouseWorkCountDto.class,
+					houseWork.completedDate,
+					houseWork.count()
+				)
+			)
 			.from(houseWork)
 			.leftJoin(houseWorkMember).on(houseWork.id.eq(houseWorkMember.houseWork.id))
 			.where(
@@ -133,19 +138,5 @@ public class HouseWorkCustomRepositoryImpl implements HouseWorkCustomRepository 
 			.groupBy(houseWork.completedDate)
 			.orderBy(houseWork.completedDate.asc())
 			.fetch();
-
-		Map<LocalDate, Long> weeklyCompleted = new LinkedHashMap<>();
-		for (int i = 0; i < 7; i++) {
-			weeklyCompleted.put(lastMonday.plusDays(i), 0L);
-		}
-
-		for (Tuple result : results) {
-			weeklyCompleted.put(
-				result.get(houseWork.completedDate),
-				result.get(houseWork.count())
-			);
-		}
-
-		return weeklyCompleted;
 	}
 }

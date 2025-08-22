@@ -2,9 +2,9 @@ package team1.allo.housework.repository.housework;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 import team1.allo.housework.entity.HouseWork;
+import team1.allo.housework.service.dto.WeeklyHouseWorkCountDto;
 
 public interface HouseWorkCustomRepository {
 
@@ -24,7 +24,7 @@ public interface HouseWorkCustomRepository {
 
 	Long countHouseWorkByMember(Long memberId, LocalDate startDate, LocalDate endDate);
 
-	Map<LocalDate, Long> getWeeklyCompletedHouseWorkCountByMember(
+	List<WeeklyHouseWorkCountDto> getWeeklyCompletedHouseWorkCountByMember(
 		Long memberId,
 		LocalDate lastMonday,
 		LocalDate lastSunday

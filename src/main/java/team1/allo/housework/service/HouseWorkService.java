@@ -42,6 +42,7 @@ import team1.allo.housework.service.dto.HouseWorkStatusByPeriodResponse;
 import team1.allo.housework.service.dto.HouseWorkWeeklyComparisonResponse;
 import team1.allo.housework.service.dto.HouseWorkWeeklyResponse;
 import team1.allo.housework.service.dto.TagForHouseWorkListResponse;
+import team1.allo.housework.service.dto.WeeklyHouseWorkCountDto;
 import team1.allo.member.entity.Member;
 import team1.allo.member.service.MemberService;
 
@@ -298,11 +299,25 @@ public class HouseWorkService {
 		int lastTotalCount = houseWorkRepository.countHouseWorkByMember(memberId, lastMonday, lastSunday).intValue();
 
 		// 지난주 완수한 요일별 나의 집안일
-		Map<String, Long> weeklyCompleted = houseWorkRepository.getWeeklyCompletedHouseWorkCountByMember(
-				memberId,
-				lastMonday,
-				lastSunday
-			).entrySet()
+		List<WeeklyHouseWorkCountDto> results = houseWorkRepository.getWeeklyCompletedHouseWorkCountByMember(
+			memberId,
+			lastMonday,
+			lastSunday
+		);
+
+		Map<LocalDate, Long> weeklyCompletedByDate = new LinkedHashMap<>();
+		for (int i = 0; i < 7; i++) {
+			weeklyCompletedByDate.put(lastMonday.plusDays(i), 0L);
+		}
+
+		for (WeeklyHouseWorkCountDto result : results) {
+			weeklyCompletedByDate.put(
+				result.completedDate(),
+				result.count()
+			);
+		}
+
+		Map<String, Long> weeklyCompleted = weeklyCompletedByDate.entrySet()
 			.stream()
 			.collect(Collectors.toMap(
 				entry -> getDayName(entry.getKey().getDayOfWeek()),
