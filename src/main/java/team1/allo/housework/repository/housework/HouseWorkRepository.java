@@ -14,4 +14,6 @@ public interface HouseWorkRepository extends JpaRepository<HouseWork, Long>, Hou
 	long countHouseWorkByGroupIdAndTaskDate(Long groupId, LocalDate taskDate);
 
 	long countHouseWorkByGroupIdAndCompletedDate(Long groupId, LocalDate completedDate);
+
+	List<HouseWork> findByPlaceIdAndTaskDate(Long placeId, LocalDate taskDate);
 }

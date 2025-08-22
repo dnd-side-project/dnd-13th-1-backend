@@ -30,6 +30,7 @@ import team1.allo.housework.service.HouseWorkService;
 import team1.allo.housework.service.dto.HouseWorkActivitySummaryResponse;
 import team1.allo.housework.service.dto.HouseWorkCleanliness;
 import team1.allo.housework.service.dto.HouseWorkListByDateResponse;
+import team1.allo.housework.service.dto.HouseWorkListByPlaceResponse;
 import team1.allo.housework.service.dto.HouseWorkListRecentResponse;
 import team1.allo.housework.service.dto.HouseWorkMyCompleteStateResponse;
 import team1.allo.housework.service.dto.HouseWorkMyContributionResponse;
@@ -166,5 +167,13 @@ public class GroupController {
 	@GetMapping("/{groupId}/cleanliness")
 	public HouseWorkCleanliness getCleanliness(@PathVariable Long groupId) {
 		return houseWorkService.getCleanliness(groupId, LocalDate.now());
+	}
+
+	@GetMapping("/places/{placeId}/house-work")
+	public HouseWorkListByPlaceResponse getHouseWorksByPlace(
+		@Auth Member member,
+		@PathVariable Long placeId
+	) {
+		return houseWorkService.getHouseWorksByPlace(member.getId(), placeId, LocalDate.now());
 	}
 }
