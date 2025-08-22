@@ -7,9 +7,9 @@ import team1.allo.group.service.dto.MemberResponse;
 
 public record HouseWorkResponse(
 	Long houseWorkId,
-	String houseworkTitle,
-	List<TagForHouseWorkListResponse> houseworkTag,
-	LocalDate houseworkDate,
-	List<MemberResponse> houseworkMembers
+	String houseWorkTitle,
+	List<TagForHouseWorkListResponse> houseWorkTag,
+	LocalDate houseWorkDate,
+	List<MemberResponse> houseWorkMembers
 ) {
 }

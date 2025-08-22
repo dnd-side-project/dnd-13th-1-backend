@@ -4,6 +4,6 @@ import java.time.LocalDate;
 
 public record HouseWorkStatusByPeriodResponse(
 	LocalDate date,
-	boolean hasHousework
+	boolean hasHouseWork
 ) {
 }
