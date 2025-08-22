@@ -353,6 +353,21 @@ public class HouseWorkService {
 		);
 	}
 
+	private String getDayName(DayOfWeek dayOfWeek) {
+		return dayOfWeek.getDisplayName(TextStyle.FULL, Locale.ENGLISH).toLowerCase();
+	}
+
+	private LocalDate getMondayOfWeeksAgo(LocalDate currentDate, int weeksAgo) {
+		return currentDate
+			.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+			.minusWeeks(weeksAgo);
+	}
+
+	private LocalDate getSundayOfWeeksAgo(LocalDate currentDate, int weeksAgo) {
+		LocalDate monday = getMondayOfWeeksAgo(currentDate, weeksAgo);
+		return monday.plusDays(6);
+	}
+
 	public HouseWorkActivitySummaryResponse getHouseWorkActivitySummary(Long memberId) {
 		Long receivedEmotionCardCount = emotionCardRepository.countEmotionCardReceivedByMember(memberId);
 		Long sentEmotionCardCount = emotionCardRepository.countEmotionCardSentByMember(memberId);
@@ -361,6 +376,37 @@ public class HouseWorkService {
 			receivedEmotionCardCount,
 			sentEmotionCardCount,
 			completedHouseWorkCount
+		);
+	}
+
+	public HouseWorkResponse getHouseWork(Long groupId, Long houseWorkId) {
+		HouseWork houseWork = houseWorkRepository.findById(houseWorkId)
+			.orElseThrow(() -> new NoSuchElementException("HouseWork does not exist"));
+
+		List<HouseWorkTag> houseWorkTags = houseWorkTagRepository.findByHouseWorkId(houseWork.getId());
+		List<HouseWorkMember> houseWorkMembers = houseWorkMemberRepository.findByHouseWorkId(houseWork.getId());
+		List<Member> members = memberService.findAllById(
+			houseWorkMembers.stream()
+				.map(HouseWorkMember::getMemberId)
+				.toList()
+		);
+
+		return new HouseWorkResponse(
+			houseWork.getId(),
+			houseWork.getName(),
+			houseWorkTags.stream()
+				.map(it -> new TagForHouseWorkListResponse(
+					it.getTag().getName()
+				))
+				.toList(),
+			houseWork.getTaskDate(),
+			members.stream()
+				.map(it -> new MemberResponse(
+					it.getId(),
+					it.getName() == null ? null : it.getName(),
+					it.getProfileImageUrl() == null ? null : it.getProfileImageUrl()
+				))
+				.toList()
 		);
 	}
 
@@ -441,53 +487,5 @@ public class HouseWorkService {
 		}
 
 		return new HouseWorkListByPlaceResponse(myHouseWork, ourHouseWork);
-	}
-
-	// ===== Private Methods =====
-
-	private String getDayName(DayOfWeek dayOfWeek) {
-		return dayOfWeek.getDisplayName(TextStyle.FULL, Locale.ENGLISH).toLowerCase();
-	}
-
-	private LocalDate getMondayOfWeeksAgo(LocalDate currentDate, int weeksAgo) {
-		return currentDate
-			.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-			.minusWeeks(weeksAgo);
-	}
-
-	private LocalDate getSundayOfWeeksAgo(LocalDate currentDate, int weeksAgo) {
-		LocalDate monday = getMondayOfWeeksAgo(currentDate, weeksAgo);
-		return monday.plusDays(6);
-	}
-
-	public HouseWorkResponse getHouseWork(Long groupId, Long houseWorkId) {
-		HouseWork houseWork = houseWorkRepository.findById(houseWorkId)
-			.orElseThrow(() -> new NoSuchElementException("HouseWork does not exist"));
-
-		List<HouseWorkTag> houseWorkTags = houseWorkTagRepository.findByHouseWorkId(houseWork.getId());
-		List<HouseWorkMember> houseWorkMembers = houseWorkMemberRepository.findByHouseWorkId(houseWork.getId());
-		List<Member> members = memberService.findAllById(
-			houseWorkMembers.stream()
-				.map(HouseWorkMember::getMemberId)
-				.toList()
-		);
-
-		return new HouseWorkResponse(
-			houseWork.getId(),
-			houseWork.getName(),
-			houseWorkTags.stream()
-				.map(it -> new TagForHouseWorkListResponse(
-					it.getTag().getName()
-				))
-				.toList(),
-			houseWork.getTaskDate(),
-			members.stream()
-				.map(it -> new MemberResponse(
-					it.getId(),
-					it.getName() == null ? null : it.getName(),
-					it.getProfileImageUrl() == null ? null : it.getProfileImageUrl()
-				))
-				.toList()
-		);
 	}
 }
