@@ -254,4 +254,35 @@ public class HouseWorkService {
 		return houseWorkRepository.findById(houseWorkId)
 			.orElseThrow(() -> new NoSuchElementException("HouseWork does not exist"));
 	}
+
+	public HouseWorkResponse getHouseWork(Long groupId, Long houseWorkId) {
+		HouseWork houseWork = houseWorkRepository.findById(houseWorkId)
+			.orElseThrow(() -> new NoSuchElementException("HouseWork does not exist"));
+
+		List<HouseWorkTag> houseWorkTags = houseWorkTagRepository.findByHouseWorkId(houseWork.getId());
+		List<HouseWorkMember> houseWorkMembers = houseWorkMemberRepository.findByHouseWorkId(houseWork.getId());
+		List<Member> members = memberService.findAllById(
+			houseWorkMembers.stream()
+				.map(HouseWorkMember::getMemberId)
+				.toList()
+		);
+
+		return new HouseWorkResponse(
+			houseWork.getId(),
+			houseWork.getName(),
+			houseWorkTags.stream()
+				.map(it -> new TagForHouseWorkListResponse(
+					it.getTag().getName()
+				))
+				.toList(),
+			houseWork.getTaskDate(),
+			members.stream()
+				.map(it -> new MemberResponse(
+					it.getId(),
+					it.getName() == null ? null : it.getName(),
+					it.getProfileImageUrl() == null ? null : it.getProfileImageUrl()
+				))
+				.toList()
+		);
+	}
 }
