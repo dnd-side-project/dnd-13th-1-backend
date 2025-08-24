@@ -109,7 +109,7 @@ public class GroupService {
 		return groupMemberRepository.findByGroupId(groupId)
 			.stream()
 			.map(it -> {
-				Member member = memberService.findById(it.getId());
+				Member member = memberService.findById(it.getMemberId());
 				return new MemberResponse(
 					member.getId(),
 					member.getName() == null ? null : member.getName(),
