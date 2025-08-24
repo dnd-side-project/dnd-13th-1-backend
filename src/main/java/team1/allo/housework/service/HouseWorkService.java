@@ -31,7 +31,10 @@ import team1.allo.housework.repository.housework.HouseWorkRepository;
 import team1.allo.housework.repository.houseworkmember.HouseWorkMemberRepository;
 import team1.allo.housework.repository.houseworktag.HouseWorkTagRepository;
 import team1.allo.housework.service.dto.HouseWorkActivitySummaryResponse;
+import team1.allo.housework.service.dto.HouseWorkByPlaceResponse;
+import team1.allo.housework.service.dto.HouseWorkCleanliness;
 import team1.allo.housework.service.dto.HouseWorkListByDateResponse;
+import team1.allo.housework.service.dto.HouseWorkListByPlaceResponse;
 import team1.allo.housework.service.dto.HouseWorkListRecentResponse;
 import team1.allo.housework.service.dto.HouseWorkMyCompleteStateResponse;
 import team1.allo.housework.service.dto.HouseWorkMyContributionResponse;
@@ -165,6 +168,15 @@ public class HouseWorkService {
 						member.getName(),
 						member.getProfileImageUrl()
 					);
+				})
+				.sorted((m1, m2) -> {
+					if (m1.memberId().equals(memberId)) {
+						return -1;
+					}
+					if (m2.memberId().equals(memberId)) {
+						return 1;
+					}
+					return 0;
 				})
 				.toList();
 
@@ -350,19 +362,6 @@ public class HouseWorkService {
 		);
 	}
 
-	public HouseWorkActivitySummaryResponse getHouseWorkActivitySummary(Long memberId) {
-		Long receivedEmotionCardCount = emotionCardRepository.countEmotionCardReceivedByMember(memberId);
-		Long sentEmotionCardCount = emotionCardRepository.countEmotionCardSentByMember(memberId);
-		Long completedHouseWorkCount = houseWorkRepository.countCompletedHouseWorkByMember(memberId);
-		return new HouseWorkActivitySummaryResponse(
-			receivedEmotionCardCount,
-			sentEmotionCardCount,
-			completedHouseWorkCount
-		);
-	}
-
-	// ===== Private Methods =====
-
 	private String getDayName(DayOfWeek dayOfWeek) {
 		return dayOfWeek.getDisplayName(TextStyle.FULL, Locale.ENGLISH).toLowerCase();
 	}
@@ -377,6 +376,18 @@ public class HouseWorkService {
 		LocalDate monday = getMondayOfWeeksAgo(currentDate, weeksAgo);
 		return monday.plusDays(6);
 	}
+
+	public HouseWorkActivitySummaryResponse getHouseWorkActivitySummary(Long memberId) {
+		Long receivedEmotionCardCount = emotionCardRepository.countEmotionCardReceivedByMember(memberId);
+		Long sentEmotionCardCount = emotionCardRepository.countEmotionCardSentByMember(memberId);
+		Long completedHouseWorkCount = houseWorkRepository.countCompletedHouseWorkByMember(memberId);
+		return new HouseWorkActivitySummaryResponse(
+			receivedEmotionCardCount,
+			sentEmotionCardCount,
+			completedHouseWorkCount
+		);
+	}
+
 	public HouseWorkResponse getHouseWork(Long groupId, Long houseWorkId) {
 		HouseWork houseWork = houseWorkRepository.findById(houseWorkId)
 			.orElseThrow(() -> new NoSuchElementException("HouseWork does not exist"));
@@ -406,5 +417,84 @@ public class HouseWorkService {
 				))
 				.toList()
 		);
+	}
+
+	public HouseWorkCleanliness getCleanliness(Long groupId, LocalDate currentDate) {
+		// 오늘 기준 우리집 집안일 수
+		long total = houseWorkRepository.countHouseWorkByGroupIdAndTaskDate(groupId, currentDate);
+
+		// 오늘 기준 우리집 완료된 집안일 수
+		long completed = houseWorkRepository.countHouseWorkByGroupIdAndCompletedDate(groupId, currentDate);
+
+		int cleanliness = 0;
+		if (completed > 0) {
+			cleanliness = (int)Math.round((completed * 100.0) / total);
+		}
+		return new HouseWorkCleanliness(cleanliness);
+	}
+
+	public HouseWorkListByPlaceResponse getHouseWorksByPlace(Long memberId, Long placeId, LocalDate currentDate) {
+		List<HouseWork> houseWorks = houseWorkRepository.findByPlaceIdAndTaskDate(placeId, currentDate);
+		List<Long> houseWorkIds = houseWorks.stream()
+			.map(HouseWork::getId)
+			.toList();
+
+		// HouseWorkMember 목록 조회
+		List<HouseWorkMember> houseWorkMembers = houseWorkMemberRepository.findByHouseWorkIds(houseWorkIds);
+
+		// Member id 목록 추출 및 구체 정보 조회
+		List<Long> memberIds = houseWorkMembers.stream()
+			.map(HouseWorkMember::getMemberId)
+			.distinct()
+			.toList();
+		Map<Long, Member> memberMap = memberService.findAllById(memberIds).stream()
+			.collect(Collectors.toMap(Member::getId, m -> m));
+
+		// 집안일 id로 그룹화
+		Map<Long, List<HouseWorkMember>> houseWorkMemberMap = houseWorkMembers.stream()
+			.collect(Collectors.groupingBy(hm -> hm.getHouseWork().getId()));
+
+		List<HouseWorkByPlaceResponse> myHouseWork = new ArrayList<>();
+		List<HouseWorkByPlaceResponse> ourHouseWork = new ArrayList<>();
+		for (HouseWork houseWork : houseWorks) {
+			Long houseWorkId = houseWork.getId();
+
+			List<MemberResponse> memberResponses = houseWorkMemberMap.getOrDefault(houseWorkId, List.of()).stream()
+				.map(hm -> {
+					Member member = memberMap.get(hm.getMemberId());
+					return new MemberResponse(
+						member.getId(),
+						null,
+						member.getProfileImageUrl()
+					);
+				})
+				.sorted((m1, m2) -> {
+					if (m1.memberId().equals(memberId)) {
+						return -1;
+					}
+					if (m2.memberId().equals(memberId)) {
+						return 1;
+					}
+					return 0;
+				})
+				.toList();
+
+			HouseWorkByPlaceResponse houseWorkResponse = new HouseWorkByPlaceResponse(
+				houseWorkId,
+				houseWork.getName(),
+				memberResponses
+			);
+
+			boolean isMyTask = houseWorkMemberMap.getOrDefault(houseWorkId, List.of()).stream()
+				.anyMatch(hm -> hm.getMemberId().equals(memberId));
+
+			if (isMyTask) {
+				myHouseWork.add(houseWorkResponse);
+				continue;
+			}
+			ourHouseWork.add(houseWorkResponse);
+		}
+
+		return new HouseWorkListByPlaceResponse(myHouseWork, ourHouseWork);
 	}
 }

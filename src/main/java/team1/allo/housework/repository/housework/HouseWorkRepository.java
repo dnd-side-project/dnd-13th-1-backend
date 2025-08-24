@@ -10,4 +10,10 @@ import team1.allo.housework.entity.HouseWork;
 public interface HouseWorkRepository extends JpaRepository<HouseWork, Long>, HouseWorkCustomRepository {
 
 	List<HouseWork> findByGroupIdAndTaskDate(Long groupId, LocalDate taskDate);
+
+	long countHouseWorkByGroupIdAndTaskDate(Long groupId, LocalDate taskDate);
+
+	long countHouseWorkByGroupIdAndCompletedDate(Long groupId, LocalDate completedDate);
+
+	List<HouseWork> findByPlaceIdAndTaskDate(Long placeId, LocalDate taskDate);
 }
