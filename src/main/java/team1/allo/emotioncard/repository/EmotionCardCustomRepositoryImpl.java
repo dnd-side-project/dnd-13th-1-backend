@@ -12,7 +12,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
-import team1.allo.emotioncard.service.dto.EmotionCardListResponse;
+import team1.allo.emotioncard.service.dto.EmotionCardListDto;
 import team1.allo.member.entity.QMember;
 
 @RequiredArgsConstructor
@@ -21,13 +21,13 @@ public class EmotionCardCustomRepositoryImpl implements EmotionCardCustomReposit
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public List<EmotionCardListResponse> getAllWithCondition(Long memberId, String filter, String sorted) {
+	public List<EmotionCardListDto> getAllWithCondition(Long memberId, String filter, String sorted) {
 		QMember senderMember = new QMember("senderMember");
 		QMember receiverMember = new QMember("receiverMember");
 
 		return queryFactory.select(
 				Projections.constructor(
-					EmotionCardListResponse.class,
+					EmotionCardListDto.class,
 					emotionCard.id,
 					houseWork.name,
 					emotionCard.disappointment,
@@ -63,8 +63,8 @@ public class EmotionCardCustomRepositoryImpl implements EmotionCardCustomReposit
 
 	private BooleanExpression buildMemberFilter(Long memberId, String filter) {
 		return switch (filter) {
-			case "from" -> emotionCard.receiverId.eq(memberId);
-			case "to" -> emotionCard.senderId.eq(memberId);
+			case "received" -> emotionCard.receiverId.eq(memberId);
+			case "sent" -> emotionCard.senderId.eq(memberId);
 			default -> null;
 		};
 	}

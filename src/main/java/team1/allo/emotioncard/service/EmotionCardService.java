@@ -1,5 +1,6 @@
 package team1.allo.emotioncard.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -12,6 +13,7 @@ import team1.allo.emotioncard.entity.Compliment;
 import team1.allo.emotioncard.entity.EmotionCard;
 import team1.allo.emotioncard.repository.ComplimentRepository;
 import team1.allo.emotioncard.repository.EmotionCardRepository;
+import team1.allo.emotioncard.service.dto.EmotionCardListDto;
 import team1.allo.emotioncard.service.dto.EmotionCardListRequest;
 import team1.allo.emotioncard.service.dto.EmotionCardListResponse;
 import team1.allo.emotioncard.service.dto.EmotionCardResponse;
@@ -24,6 +26,10 @@ import team1.allo.member.service.MemberService;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class EmotionCardService {
+
+	private static final String THANK_EMOTION_TYPE = "thank";
+	private static final String REGRETFUL_EMOTION_TYPE = "regretful";
+	private static final String BOTH_EMOTION_TYPE = "both";
 
 	private final EmotionCardRepository emotionCardRepository;
 	private final ComplimentRepository complimentRepository;
@@ -70,24 +76,27 @@ public class EmotionCardService {
 		String filter = request.filter();
 		String sorted = request.sorted();
 
-		List<EmotionCardListResponse> responses = emotionCardRepository.getAllWithCondition(memberId, filter, sorted);
-		for (EmotionCardListResponse response : responses) {
-			Long emotionCardId = response.emotionCardId();
+		List<EmotionCardListResponse> responses = new ArrayList<>();
+		List<EmotionCardListDto> cardList = emotionCardRepository.getAllWithCondition(memberId, filter, sorted);
+		for (EmotionCardListDto card : cardList) {
+			Long emotionCardId = card.emotionCardId();
 
 			String newContent = complimentRepository.findByEmotionCardId(emotionCardId).stream()
 				.map(Compliment::getContent)
 				.collect(Collectors.joining(" "));
+			String disappointment = card.content();
 
-			if (!newContent.isEmpty()) {
-				responses.set(responses.indexOf(response), new EmotionCardListResponse(
-					response.emotionCardId(),
-					response.houseWorkName(),
-					newContent,
-					response.senderNickName(),
-					response.receiverNickName(),
-					response.createdTime()
-				));
+			String emotionType = BOTH_EMOTION_TYPE;
+			EmotionCardListResponse response = EmotionCardListResponse.from(card, newContent, emotionType);
+			if (!newContent.isEmpty() && disappointment == null) {
+				emotionType = THANK_EMOTION_TYPE;
+				response = EmotionCardListResponse.from(card, newContent, emotionType);
 			}
+			if (newContent.isEmpty() && disappointment != null) {
+				emotionType = REGRETFUL_EMOTION_TYPE;
+				response = EmotionCardListResponse.from(card, disappointment, emotionType);
+			}
+			responses.add(response);
 		}
 		return responses;
 	}
