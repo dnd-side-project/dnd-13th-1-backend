@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import team1.allo.auth.annotation.Auth;
 import team1.allo.character.service.CharacterService;
 import team1.allo.group.entity.Group;
 import team1.allo.group.entity.GroupMember;
@@ -48,7 +49,7 @@ public class GroupService {
 	private final MemberService memberService;
 
 	@Transactional
-	public GroupResponse save(Member member, GroupRequest groupRequest) {
+	public GroupResponse save(@Auth Member member, GroupRequest groupRequest) {
 		Boolean existsByCharacterId = characterService.existsById(groupRequest.characterId());
 		if (!existsByCharacterId) {
 			throw new NoSuchElementException("Character does not exist");
