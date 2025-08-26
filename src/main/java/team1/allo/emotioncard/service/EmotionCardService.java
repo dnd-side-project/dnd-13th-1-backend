@@ -103,4 +103,14 @@ public class EmotionCardService {
 		}
 		return responses;
 	}
+
+	@Transactional
+	public void deleteEmotionCard(Long emotionCardId) {
+		EmotionCard emotionCard = emotionCardRepository.findById(emotionCardId)
+			.orElseThrow(() -> new NoSuchElementException("EmotionCard does not exist"));
+		List<Compliment> compliments = complimentRepository.findByEmotionCardId(emotionCardId);
+
+		complimentRepository.deleteAll(compliments);
+		emotionCardRepository.delete(emotionCard);
+	}
 }
