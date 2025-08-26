@@ -1,3 +1,4 @@
+/*
 package team1.allo.storage;
 
 import java.util.UUID;
@@ -33,3 +34,4 @@ public class StorageUtils {
 		return UUID.randomUUID() + extension;
 	}
 }
+*/
