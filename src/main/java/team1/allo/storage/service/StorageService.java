@@ -1,3 +1,4 @@
+/*
 package team1.allo.storage.service;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -8,3 +9,4 @@ public interface StorageService {
 
 	void deleteImage(String url);
 }
+*/

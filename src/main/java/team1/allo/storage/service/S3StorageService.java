@@ -1,3 +1,4 @@
+/*
 package team1.allo.storage.service;
 
 import java.io.IOException;
@@ -8,6 +9,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.awspring.cloud.s3.ObjectMetadata;
@@ -15,6 +18,8 @@ import io.awspring.cloud.s3.S3Template;
 import lombok.RequiredArgsConstructor;
 import team1.allo.storage.StorageUtils;
 
+@Service
+@Profile("prod")
 @RequiredArgsConstructor
 public class S3StorageService implements StorageService {
 
@@ -61,3 +66,4 @@ public class S3StorageService implements StorageService {
 		s3Template.deleteObject(bucketName, key);
 	}
 }
+*/
