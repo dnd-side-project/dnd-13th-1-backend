@@ -33,7 +33,8 @@ public class EmotionCardCustomRepositoryImpl implements EmotionCardCustomReposit
 					emotionCard.disappointment,
 					senderMember.name,
 					receiverMember.name,
-					emotionCard.createdDate
+					emotionCard.createdDate,
+					emotionCard.isRead
 				)
 			)
 			.from(emotionCard)

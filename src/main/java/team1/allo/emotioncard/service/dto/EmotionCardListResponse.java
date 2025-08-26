@@ -9,7 +9,8 @@ public record EmotionCardListResponse(
 	String senderNickName,
 	String receiverNickName,
 	LocalDateTime createdTime,
-	String emotionType
+	String emotionType,
+	boolean isRead
 ) {
 
 	public static EmotionCardListResponse from(EmotionCardListDto dto, String newContent, String emotionType) {
@@ -20,7 +21,8 @@ public record EmotionCardListResponse(
 			dto.senderNickName(),
 			dto.receiverNickName(),
 			dto.createdTime(),
-			emotionType
+			emotionType,
+			dto.isRead()
 		);
 	}
 }
