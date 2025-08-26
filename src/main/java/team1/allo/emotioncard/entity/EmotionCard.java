@@ -30,6 +30,8 @@ public class EmotionCard {
 
 	private LocalDateTime createdDate;
 
+	private boolean isRead;
+
 	public EmotionCard(
 		Long senderId,
 		Long receiverId,
@@ -41,5 +43,10 @@ public class EmotionCard {
 		this.houseWorkId = houseWorkId;
 		this.disappointment = disappointment;
 		this.createdDate = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+		this.isRead = false;
+	}
+
+	public void read() {
+		this.isRead = true;
 	}
 }

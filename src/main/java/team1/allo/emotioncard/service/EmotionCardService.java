@@ -49,6 +49,7 @@ public class EmotionCardService {
 		return new EmotionCardSaveResponse(emotionCard.getId());
 	}
 
+	@Transactional
 	public EmotionCardResponse getEmotionCard(Long emotionCardId) {
 		EmotionCard emotionCard = emotionCardRepository.findById(emotionCardId)
 			.orElseThrow(() -> new NoSuchElementException("EmotionCard does not exist"));
@@ -62,6 +63,8 @@ public class EmotionCardService {
 			.getName();
 		String receiverNickName = memberService.findById(emotionCard.getReceiverId())
 			.getName();
+
+		emotionCard.read();
 
 		return EmotionCardResponse.from(
 			emotionCard,
@@ -99,5 +102,15 @@ public class EmotionCardService {
 			responses.add(response);
 		}
 		return responses;
+	}
+
+	@Transactional
+	public void deleteEmotionCard(Long emotionCardId) {
+		EmotionCard emotionCard = emotionCardRepository.findById(emotionCardId)
+			.orElseThrow(() -> new NoSuchElementException("EmotionCard does not exist"));
+		List<Compliment> compliments = complimentRepository.findByEmotionCardId(emotionCardId);
+
+		complimentRepository.deleteAll(compliments);
+		emotionCardRepository.delete(emotionCard);
 	}
 }

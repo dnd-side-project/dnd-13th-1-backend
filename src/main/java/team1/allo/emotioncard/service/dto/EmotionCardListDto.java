@@ -8,6 +8,7 @@ public record EmotionCardListDto(
 	String content,
 	String senderNickName,
 	String receiverNickName,
-	LocalDateTime createdTime
+	LocalDateTime createdTime,
+	boolean isRead
 ) {
 }
