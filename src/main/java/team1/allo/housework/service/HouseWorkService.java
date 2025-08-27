@@ -21,6 +21,7 @@ import team1.allo.group.entity.Group;
 import team1.allo.group.entity.Place;
 import team1.allo.group.entity.Tag;
 import team1.allo.group.service.GroupService;
+import team1.allo.group.service.dto.GroupState;
 import team1.allo.group.service.dto.MemberResponse;
 import team1.allo.group.service.policy.DayOfWeekPolicy;
 import team1.allo.group.service.policy.RoutinePolicy;
@@ -32,7 +33,6 @@ import team1.allo.housework.repository.houseworkmember.HouseWorkMemberRepository
 import team1.allo.housework.repository.houseworktag.HouseWorkTagRepository;
 import team1.allo.housework.service.dto.HouseWorkActivitySummaryResponse;
 import team1.allo.housework.service.dto.HouseWorkByPlaceResponse;
-import team1.allo.housework.service.dto.HouseWorkCleanliness;
 import team1.allo.housework.service.dto.HouseWorkListByDateResponse;
 import team1.allo.housework.service.dto.HouseWorkListByPlaceResponse;
 import team1.allo.housework.service.dto.HouseWorkListRecentResponse;
@@ -419,7 +419,7 @@ public class HouseWorkService {
 		);
 	}
 
-	public HouseWorkCleanliness getCleanliness(Long groupId, LocalDate currentDate) {
+	public GroupState getGroupState(Long groupId, LocalDate currentDate) {
 		// 오늘 기준 우리집 집안일 수
 		long total = houseWorkRepository.countHouseWorkByGroupIdAndTaskDate(groupId, currentDate);
 
@@ -430,7 +430,23 @@ public class HouseWorkService {
 		if (completed > 0) {
 			cleanliness = (int)Math.round((completed * 100.0) / total);
 		}
-		return new HouseWorkCleanliness(cleanliness);
+
+		String characterState = "심심한 상태에요";
+		String characterMessage = "어서와~ 집안일을 등록해봐!";
+		if (cleanliness > 0 && cleanliness <= 39) {
+			characterState = "많이 꾀죄죄해요";
+			characterMessage = "먼지가 나랑 친구하자고 하겠어!";
+		}
+		if (cleanliness > 39 && cleanliness <= 79) {
+			characterState = "조금 깔끔해졌어요";
+			characterMessage = "슬슬 할일을 해야할 시간이야!";
+		}
+		if (cleanliness > 79 && cleanliness <= 100) {
+			characterState = "반짝반짝 깨끗해요";
+			characterMessage = "우와~ 반짝반짝 파티네!";
+		}
+
+		return new GroupState(cleanliness, characterState, characterMessage);
 	}
 
 	public HouseWorkListByPlaceResponse getHouseWorksByPlace(Long memberId, Long placeId, LocalDate currentDate) {
