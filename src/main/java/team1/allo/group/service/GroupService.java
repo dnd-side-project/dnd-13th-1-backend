@@ -69,7 +69,7 @@ public class GroupService {
 			.toList();
 		tagRepository.saveAll(tags);
 
-		return new GroupResponse(group.getId(), group.getInviteCode());
+		return new GroupResponse(group.getId(), group.getInviteCode(), group.getBackGroundType().toString());
 	}
 
 	@Transactional
@@ -124,7 +124,7 @@ public class GroupService {
 	public MyGroupResponse getMyGroup(Member member) {
 		GroupMember groupMember = groupMemberRepository.findFirstByMemberId(member.getId())
 			.orElseThrow(() -> new NoSuchElementException("Group Member does not exist"));
-		return new MyGroupResponse(groupMember.getGroup().getId(),groupMember.getGroup().getInviteCode());
+		return new MyGroupResponse(groupMember.getGroup().getId(), groupMember.getGroup().getInviteCode());
 	}
 
 	public Group findGroupById(Long groupId) {
