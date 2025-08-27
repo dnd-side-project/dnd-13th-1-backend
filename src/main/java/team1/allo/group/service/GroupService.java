@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import team1.allo.auth.annotation.Auth;
-import team1.allo.character.service.CharacterService;
 import team1.allo.group.entity.Group;
 import team1.allo.group.entity.GroupMember;
 import team1.allo.group.entity.Place;
@@ -44,20 +43,15 @@ public class GroupService {
 
 	private final InviteCodeGenerator inviteCodeGenerator;
 
-	private final CharacterService characterService;
 	private final PresetService presetService;
 	private final MemberService memberService;
 
 	@Transactional
 	public GroupResponse save(@Auth Member member, GroupRequest groupRequest) {
-		Boolean existsByCharacterId = characterService.existsById(groupRequest.characterId());
-		if (!existsByCharacterId) {
-			throw new NoSuchElementException("Character does not exist");
-		}
 		//초대코드 생성
 		String inviteCode = inviteCodeGenerator.generateInviteCode();
 		//그룹생성
-		Group group = new Group(groupRequest.characterId(), inviteCode);
+		Group group = new Group(groupRequest.backGroundTypeNum(), inviteCode);
 		groupRepository.save(group);
 		//요청자 그룹 멤버에 추가
 		GroupMember groupMember = new GroupMember(group, member.getId());

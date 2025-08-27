@@ -1,6 +1,8 @@
 package team1.allo.group.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -19,12 +21,13 @@ public class Group {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private Long characterId;
+	@Enumerated(EnumType.STRING)
+	private BackGroundType backGroundType;
 
 	private String inviteCode;
 
-	public Group(Long characterId, String inviteCode) {
-		this.characterId = characterId;
+	public Group(int backGroundTypeNum, String inviteCode) {
+		this.backGroundType = BackGroundType.valueOf(backGroundTypeNum);
 		this.inviteCode = inviteCode;
 	}
 }
