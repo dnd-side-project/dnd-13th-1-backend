@@ -1,5 +1,6 @@
 package team1.allo.group.service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -104,18 +105,19 @@ public class GroupService {
 			.toList();
 	}
 
-	public List<MemberResponse> getMembers(Long groupId) {
+	public List<MemberResponse> getMembers(Member me, Long groupId) {
 		validateGroupExists(groupId);
-		return groupMemberRepository.findByGroupId(groupId)
-			.stream()
+		return groupMemberRepository.findByGroupId(groupId).stream()
 			.map(it -> {
 				Member member = memberService.findById(it.getMemberId());
 				return new MemberResponse(
 					member.getId(),
-					member.getName() == null ? null : member.getName(),
-					member.getProfileImageUrl() == null ? null : member.getProfileImageUrl()
+					member.getName(),
+					member.getProfileImageUrl()
 				);
 			})
+			// me에 해당하는 id는 항상 앞에 오도록 정렬
+			.sorted(Comparator.comparing((MemberResponse r) -> !r.memberId().equals(me.getId())))
 			.toList();
 
 	}

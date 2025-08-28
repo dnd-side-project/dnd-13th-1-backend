@@ -84,8 +84,8 @@ public class GroupController {
 
 	@Operation(summary = "그룹 멤버 목록 조회")
 	@GetMapping("/{groupId}/members")
-	public List<MemberResponse> getMembers(@PathVariable Long groupId) {
-		return groupService.getMembers(groupId);
+	public List<MemberResponse> getMembers(@Auth Member member, @PathVariable Long groupId) {
+		return groupService.getMembers(member, groupId);
 	}
 
 	@Operation(summary = "내 그룹 조회")
