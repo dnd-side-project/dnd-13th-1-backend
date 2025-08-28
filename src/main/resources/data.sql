@@ -1,16 +1,9 @@
-INSERT INTO house_work_group (character_id, invite_code)
-VALUES (1, 'INVITE123'),
-       (2, 'INVITE456'),
-       (3, 'INVITE789'),
-       (4, 'INVITE101'),
-       (5, 'INVITE112');
-
-INSERT INTO house_work_character (name, image_url)
-VALUES ('알로', 'https://fake.com/1.png'),
-       ('깨끗이', 'https://fake.com/2.png'),
-       ('코클린', 'https://fake.com/3.png'),
-       ('깔끔이', 'https://fake.com/4.png'),
-       ('쓱싹이', 'https://fake.com/5.png');
+INSERT INTO house_work_group (back_ground_type, invite_code)
+VALUES ('ROOM_MATE', 'INVITE123'),
+       ('ROOM_MATE', 'INVITE456'),
+       ('FAMILY', 'INVITE789'),
+       ('FAMILY', 'INVITE101'),
+       ('COUPLE', 'INVITE112');
 
 INSERT INTO member (code, name, profile_image_url)
 VALUES ('M001', '멤버1', 'https://fake.com/m1.png'),
