@@ -76,10 +76,16 @@ public class GroupService {
 	public EnterResponse enter(Member member, EnterRequest enterRequest) {
 		Group group = groupRepository.findByInviteCode(enterRequest.inviteCode())
 			.orElseThrow(() -> new NoSuchElementException("Invite code does not exist"));
+
+		Long groupId = group.getId();
+		if (groupMemberRepository.existsByGroupIdAndMemberId(groupId, member.getId())) {
+			throw new RuntimeException("Already a member of this group");
+		}
+
 		//멤버추가
 		GroupMember groupMember = new GroupMember(group, member.getId());
 		groupMemberRepository.save(groupMember);
-		return new EnterResponse(group.getId());
+		return new EnterResponse(groupId);
 	}
 
 	public List<PlaceResponse> getPlaces(Long groupId) {
