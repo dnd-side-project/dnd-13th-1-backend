@@ -13,21 +13,17 @@ import io.jsonwebtoken.security.Keys;
 public class JwtProvider {
 
 	private final SecretKey secretKey;
-	private final long expirationMillis;
 
 	public JwtProvider(AppJwtProps props) {
 		this.secretKey = Keys.hmacShaKeyFor(props.secret().getBytes());
-		this.expirationMillis = props.expirationMillis();
 	}
 
 	public String generateToken(Long memberId) {
 		Date now = new Date();
-		Date expiry = new Date(now.getTime() + expirationMillis);
 
 		return Jwts.builder()
 			.subject(String.valueOf(memberId))
 			.issuedAt(now)
-			.expiration(expiry)
 			.signWith(secretKey)
 			.compact();
 	}
@@ -43,4 +39,3 @@ public class JwtProvider {
 		);
 	}
 }
-
