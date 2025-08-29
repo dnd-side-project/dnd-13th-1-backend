@@ -7,6 +7,7 @@ import team1.allo.auth.client.KakaoClient;
 import team1.allo.auth.jwt.JwtProvider;
 import team1.allo.auth.service.dto.KakaoUserResponse;
 import team1.allo.auth.service.dto.LoginResponse;
+import team1.allo.auth.service.dto.MyProfileResponse;
 import team1.allo.member.entity.Member;
 import team1.allo.member.repository.MemberRepository;
 
@@ -38,6 +39,10 @@ public class AuthService {
 
 		String jwt = jwtProvider.generateToken(member.getId());
 		return new LoginResponse("Bearer " + jwt);
+	}
+
+	public MyProfileResponse getMyProfile(Member member) {
+		return MyProfileResponse.from(member);
 	}
 }
 
