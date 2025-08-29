@@ -8,6 +8,7 @@ import team1.allo.auth.jwt.JwtProvider;
 import team1.allo.auth.service.dto.KakaoUserResponse;
 import team1.allo.auth.service.dto.LoginResponse;
 import team1.allo.auth.service.dto.MyProfileResponse;
+import team1.allo.group.service.generator.InviteCodeGenerator;
 import team1.allo.member.entity.Member;
 import team1.allo.member.repository.MemberRepository;
 
@@ -18,6 +19,7 @@ public class AuthService {
 	private final KakaoClient kakaoClient;
 	private final MemberRepository memberRepository;
 	private final JwtProvider jwtProvider;
+	private final InviteCodeGenerator inviteCodeGenerator;
 
 	public LoginResponse login(String kakaoAccessToken) {
 		// WebClient 호출을 동기(blocking)으로 받음
@@ -29,10 +31,12 @@ public class AuthService {
 
 		Long kakaoId = userInfo.id();
 		String code = "KAKAO_" + kakaoId;
+		String name = "allo_" + inviteCodeGenerator.generateInviteCode();
 
 		Member member = memberRepository.findByCode(code)
 			.orElse(Member.builder()
 				.code(code)
+				.name(name)
 				.build());
 
 		member = memberRepository.save(member);
