@@ -54,6 +54,13 @@ public class GroupService {
 		//그룹생성
 		Group group = new Group(groupRequest.backGroundTypeNum(), inviteCode);
 		groupRepository.save(group);
+		//사용자가 기존 그룹 멤버가 있으면 무효화
+		if (groupMemberRepository.existsByMemberIdAndUsedTrue(member.getId())) {
+			List<GroupMember> groupMembers = groupMemberRepository.findByMemberIdAndUsedTrue(member.getId());
+			for (GroupMember groupMember : groupMembers) {
+				groupMember.invalidate();
+			}
+		}
 		//요청자 그룹 멤버에 추가
 		GroupMember groupMember = new GroupMember(group, member.getId());
 		groupMemberRepository.save(groupMember);
@@ -79,11 +86,25 @@ public class GroupService {
 			.orElseThrow(() -> new NoSuchElementException("Invite code does not exist"));
 
 		Long groupId = group.getId();
-		if (groupMemberRepository.existsByGroupIdAndMemberId(groupId, member.getId())) {
-			throw new RuntimeException("Already a member of this group");
+
+		//사용자가 기존 그룹 멤버가 있으면 무효화
+		if (groupMemberRepository.existsByMemberIdAndUsedTrue(member.getId())) {
+			List<GroupMember> groupMembers = groupMemberRepository.findByMemberIdAndUsedTrue(member.getId());
+			for (GroupMember groupMember : groupMembers) {
+				groupMember.invalidate();
+			}
 		}
 
-		//멤버추가
+		//예전에 있던 그룹 멤버면 상태 유효 변경하고 리턴
+		if (groupMemberRepository.existsByGroupIdAndMemberId(groupId, member.getId())) {
+			GroupMember existsGroupMember = groupMemberRepository.findByMemberIdAndGroupId(member.getId(),
+					groupId)
+				.orElseThrow(() -> new NoSuchElementException("Group Member does not exist"));
+			existsGroupMember.validate();
+			return new EnterResponse(null);
+		}
+
+		//없으면 멤버추가
 		GroupMember groupMember = new GroupMember(group, member.getId());
 		groupMemberRepository.save(groupMember);
 		return new EnterResponse(groupId);
@@ -130,9 +151,13 @@ public class GroupService {
 	}
 
 	public MyGroupResponse getMyGroup(Member member) {
-		GroupMember groupMember = groupMemberRepository.findFirstByMemberId(member.getId())
+		GroupMember groupMember = groupMemberRepository.findFirstByMemberIdAndUsedTrue(member.getId())
 			.orElseThrow(() -> new NoSuchElementException("Group Member does not exist"));
-		return new MyGroupResponse(groupMember.getGroup().getId(), groupMember.getGroup().getInviteCode());
+		return new MyGroupResponse(
+			groupMember.getGroup().getId(),
+			groupMember.getGroup().getInviteCode(),
+			groupMember.getGroup().getBackGroundType().toString()
+			);
 	}
 
 	public Group findGroupById(Long groupId) {

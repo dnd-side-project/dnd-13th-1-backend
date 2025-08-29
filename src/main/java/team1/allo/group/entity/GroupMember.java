@@ -26,8 +26,19 @@ public class GroupMember {
 
 	private Long memberId;
 
+	private boolean used;
+
 	public GroupMember(Group group, Long memberId) {
 		this.group = group;
 		this.memberId = memberId;
+		this.used = true;
+	}
+
+	public void validate(){
+		this.used = true;
+	}
+
+	public void invalidate() {
+		this.used = false;
 	}
 }
