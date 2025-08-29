@@ -33,6 +33,7 @@ import team1.allo.housework.repository.houseworkmember.HouseWorkMemberRepository
 import team1.allo.housework.repository.houseworktag.HouseWorkTagRepository;
 import team1.allo.housework.service.dto.HouseWorkActivitySummaryResponse;
 import team1.allo.housework.service.dto.HouseWorkByPlaceResponse;
+import team1.allo.housework.service.dto.HouseWorkDetailResponse;
 import team1.allo.housework.service.dto.HouseWorkListByDateResponse;
 import team1.allo.housework.service.dto.HouseWorkListByPlaceResponse;
 import team1.allo.housework.service.dto.HouseWorkListRecentResponse;
@@ -388,7 +389,7 @@ public class HouseWorkService {
 		);
 	}
 
-	public HouseWorkResponse getHouseWork(Long houseWorkId) {
+	public HouseWorkDetailResponse getHouseWork(Long houseWorkId) {
 		HouseWork houseWork = houseWorkRepository.findById(houseWorkId)
 			.orElseThrow(() -> new NoSuchElementException("HouseWork does not exist"));
 
@@ -400,9 +401,10 @@ public class HouseWorkService {
 				.toList()
 		);
 
-		return new HouseWorkResponse(
+		return new HouseWorkDetailResponse(
 			houseWork.getId(),
 			houseWork.getName(),
+			houseWork.getPlace().getName(),
 			houseWorkTags.stream()
 				.map(it -> new TagForHouseWorkListResponse(
 					it.getTag().getName()
