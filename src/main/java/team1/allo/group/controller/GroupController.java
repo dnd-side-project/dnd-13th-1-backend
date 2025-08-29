@@ -101,9 +101,9 @@ public class GroupController {
 	}
 
 	@Operation(summary = "집안일 단건 조회")
-	@GetMapping("/{groupId}/house-work/{houseWorkId}")
-	public HouseWorkResponse getHouseWork(@PathVariable Long groupId, @PathVariable Long houseWorkId) {
-		return houseWorkService.getHouseWork(groupId, houseWorkId);
+	@GetMapping("/house-work/{houseWorkId}")
+	public HouseWorkResponse getHouseWork(@PathVariable Long houseWorkId) {
+		return houseWorkService.getHouseWork(houseWorkId);
 	}
 
 	@Operation(summary = "특정 기간 내 집안일 존재 여부 조회")

@@ -388,7 +388,7 @@ public class HouseWorkService {
 		);
 	}
 
-	public HouseWorkResponse getHouseWork(Long groupId, Long houseWorkId) {
+	public HouseWorkResponse getHouseWork(Long houseWorkId) {
 		HouseWork houseWork = houseWorkRepository.findById(houseWorkId)
 			.orElseThrow(() -> new NoSuchElementException("HouseWork does not exist"));
 
