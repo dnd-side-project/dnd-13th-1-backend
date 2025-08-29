@@ -164,10 +164,11 @@ public class GroupService {
 	}
 
 	@Transactional
-	public void savePlace(Long groupId, PlaceSaveRequest request) {
+	public PlaceResponse savePlace(Long groupId, PlaceSaveRequest request) {
 		Group group = groupRepository.findById(groupId)
 			.orElseThrow(() -> new NoSuchElementException("group not found"));
 		Place place = new Place(request.name(), group);
-		placeRepository.save(place);
+		Place saved = placeRepository.save(place);
+		return new PlaceResponse(saved.getId(), saved.getName());
 	}
 }

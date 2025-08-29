@@ -202,8 +202,8 @@ public class GroupController {
 
 	@Operation(summary = "장소 추가")
 	@PostMapping("/{groupId}/places")
-	public void savePlace(@PathVariable Long groupId, @RequestBody PlaceSaveRequest request) {
-		groupService.savePlace(groupId, request);
+	public PlaceResponse savePlace(@PathVariable Long groupId, @RequestBody PlaceSaveRequest request) {
+		return groupService.savePlace(groupId, request);
 	}
 
 	@Operation(summary = "우리집 청결도, 캐릭터 상태, 캐릭터 대사 조회")
