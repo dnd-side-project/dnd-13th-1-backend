@@ -17,19 +17,19 @@ VALUES ('M001', '멤버1', 'https://fake.com/m1.png'),
        ('M009', '멤버9', 'https://fake.com/m9.png'),
        ('M010', '멤버10', 'https://fake.com/m10.png');
 
-INSERT INTO group_member (house_work_group_id, member_id)
-VALUES (1, 1),
-       (1, 2),
-       (1, 3),
-       (1, 4),
-       (2, 5),
-       (2, 6),
-       (2, 7),
-       (3, 8),
-       (3, 9),
-       (3, 10),
-       (4, 1),
-       (4, 5);
+INSERT INTO group_member (house_work_group_id, member_id, used)
+VALUES (1, 1, false),
+       (1, 2, false),
+       (1, 3, false),
+       (1, 4, false),
+       (2, 5, false),
+       (2, 6, false),
+       (2, 7, false),
+       (3, 8, false),
+       (3, 9, false),
+       (3, 10, false),
+       (4, 1, false),
+       (4, 5, false);
 
 INSERT INTO place (name, house_work_group_id)
 VALUES ('거실', 1),

@@ -31,12 +31,12 @@ import team1.allo.group.service.dto.TagResponse;
 import team1.allo.group.service.dto.TagSaveRequest;
 import team1.allo.housework.service.HouseWorkService;
 import team1.allo.housework.service.dto.HouseWorkActivitySummaryResponse;
-import team1.allo.housework.service.dto.HouseWorkDetailResponse;
 import team1.allo.housework.service.dto.HouseWorkListByDateResponse;
 import team1.allo.housework.service.dto.HouseWorkListByPlaceResponse;
 import team1.allo.housework.service.dto.HouseWorkListRecentResponse;
 import team1.allo.housework.service.dto.HouseWorkMyCompleteStateResponse;
 import team1.allo.housework.service.dto.HouseWorkMyContributionResponse;
+import team1.allo.housework.service.dto.HouseWorkResponse;
 import team1.allo.housework.service.dto.HouseWorkSaveRequest;
 import team1.allo.housework.service.dto.HouseWorkStatusByPeriodResponse;
 import team1.allo.housework.service.dto.HouseWorkWeeklyComparisonResponse;
@@ -102,7 +102,7 @@ public class GroupController {
 
 	@Operation(summary = "집안일 단건 조회")
 	@GetMapping("/house-work/{houseWorkId}")
-	public HouseWorkDetailResponse getHouseWork(@PathVariable Long houseWorkId) {
+	public HouseWorkResponse getHouseWork(@PathVariable Long houseWorkId) {
 		return houseWorkService.getHouseWork(houseWorkId);
 	}
 
